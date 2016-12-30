@@ -1,5 +1,4 @@
-﻿"use strict";
-import domBldr = require("dom-builder");
+﻿import domBldr = require("dom-builder");
 
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Reduces the code required to create and setup a new element for insertion into the DOM.

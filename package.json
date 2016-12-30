@@ -1,6 +1,6 @@
 {
   "name": "dom-builder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript DOM builder utils, simple as: new DomBuilderFactory(window.document).create('div').style('color', 'green').element;",
   "author": "TeamworkGuy2",
   "license": "MIT",

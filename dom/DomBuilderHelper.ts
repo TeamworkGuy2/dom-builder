@@ -1,5 +1,4 @@
-﻿"use strict";
-import domBldr = require("dom-builder");
+﻿import domBldr = require("dom-builder");
 
 /** Functions for handling XMLDocument objects
  * @since 2016-04-27

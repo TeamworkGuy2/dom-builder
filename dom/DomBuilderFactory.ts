@@ -1,5 +1,4 @@
-﻿"use strict";
-import domBldr = require("dom-builder");
+﻿import domBldr = require("dom-builder");
 import DomBuilderImpl = require("./DomBuilder");
 
 /** A factory for creating DOM elements.
@@ -33,9 +32,9 @@ class DomBuilderFactory implements domBldr.BuilderFactory {
     }
 
 
-    public create(elemName: string, namespace?: string): DomBuilder<HTMLElement> {
+    public create<T extends HTMLElement>(elemName: string, namespace?: string): DomBuilder<T> {
         var elem = namespace == null ? this.dom.createElement(elemName) : <HTMLElement>this.dom.createElementNS(namespace, elemName);
-        return DomBuilderImpl.newInst(elem, this.dom);
+        return <any>DomBuilderImpl.newInst(elem, this.dom);
     }
 
 
