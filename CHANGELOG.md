@@ -4,7 +4,14 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.1.1](N/A) - 2016-12-30
+### [0.2.0](N/A) - 2017-01-28
+#### Changed
+* Added method expectNode() to DomValidate interface
+* DomBuilder internal changes to make extending it easier
+
+
+--------
+### [0.1.1](https://github.com/TeamworkGuy2/dom-builder/commit/79abd5e028f5c71ede33924428d3df2755a6d871) - 2016-12-30
 #### Changed
 * TypeScript 2.0 compatibility
 

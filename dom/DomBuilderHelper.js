@@ -4,8 +4,8 @@
  */
 var DomBuilderHelper = (function () {
     function DomBuilderHelper(dom, validator) {
-        this.dom = dom;
-        this.validator = validator;
+        this._dom = dom;
+        this._validator = validator;
     }
     DomBuilderHelper.getParser = function () {
         return DomBuilderHelper._parser != null ? DomBuilderHelper._parser : (DomBuilderHelper._parser = new DOMParser());
@@ -36,7 +36,7 @@ var DomBuilderHelper = (function () {
     };
     DomBuilderHelper.prototype._attrGetOrSet = function (attrs, name, parser, val) {
         if (val != null) {
-            var attr = this.dom.createAttribute(name);
+            var attr = this._dom.createAttribute(name);
             attr.value = val;
             attrs.setNamedItem(attr);
             return val;
@@ -94,7 +94,7 @@ var DomBuilderHelper = (function () {
     DomBuilderHelper.prototype.queryOneAndGetChilds = function (parent, selectors) {
         var res = parent.querySelector(selectors);
         if (!res) {
-            throw this.validator.missingNode(selectors);
+            throw this._validator.missingNode(selectors);
         }
         var resAry = Array.prototype.slice.call(res.children);
         return resAry;

@@ -4,7 +4,8 @@ TypeScript DOM Builder
 Dependencies:
 none
 
-TypeScript DOM builder utils, as simple as: new DomBuilderFactory(window.document).create('div').style('color', 'green').element;
+TypeScript DOM builder utils, as simple as
+`new DomBuilderFactory(window.document).create('div').style('color', 'green').element`;
 
 
 ### Examples:
@@ -29,7 +30,7 @@ var div = bldr.create('div')
 window.document.appendChild(div.element);
 ```
 
-#### Use DomBuilderHelepr to help manipulate existing elements
+#### Use DomBuilderHelper to help manipulate existing elements
 ```ts
 var element = window.document.querySelector(...);
 

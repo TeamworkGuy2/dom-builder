@@ -16,13 +16,13 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    private dom: Document;
-    private validator: DomValidate;
+    private _dom: Document;
+    private _validator: DomValidate;
 
 
     constructor(dom: Document, validator: DomValidate) {
-        this.dom = dom;
-        this.validator = validator;
+        this._dom = dom;
+        this._validator = validator;
     }
 
 
@@ -59,7 +59,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMap, name: string, parser: (str: string) => T, val?: string): T {
         if (val != null) {
-            var attr = this.dom.createAttribute(name);
+            var attr = this._dom.createAttribute(name);
             attr.value = val;
             attrs.setNamedItem(attr);
             return <any>val;
@@ -131,7 +131,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     public queryOneAndGetChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
         var res = (<HTMLElement>parent.querySelector(selectors));
-        if (!res) { throw this.validator.missingNode(selectors); }
+        if (!res) { throw this._validator.missingNode(selectors); }
         var resAry = Array.prototype.slice.call(res.children);
         return resAry;
     }
