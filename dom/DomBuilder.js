@@ -109,11 +109,12 @@ var DomBuilder = (function () {
     DomBuilder.prototype.addChild = function (elems) {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
-                this.elem.appendChild(elems[i]);
+                var el = elems[i];
+                this.elem.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
             }
         }
         else if (elems) {
-            this.elem.appendChild(elems);
+            this.elem.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
         }
         return this;
     };
@@ -131,6 +132,9 @@ var DomBuilder = (function () {
         if (useCapture === void 0) { useCapture = false; }
         this.elem.addEventListener(eventName, handler, useCapture);
         return this;
+    };
+    DomBuilder.isDomBuilder = function (elem) {
+        return elem.textOrChild !== undefined && elem.attr !== undefined;
     };
     DomBuilder.newInst = function (elem, dom, id, classes, styles) {
         var inst = new DomBuilder(elem, dom);

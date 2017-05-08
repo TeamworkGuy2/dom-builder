@@ -4,7 +4,14 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.2.0](N/A) - 2017-01-28
+### [0.2.1](N/A) - 2017-05-08
+#### Changed
+* Expanded DomBuilderFactory.create() to use HTMLElementTagNameMap for all HTML element types/names
+* DomBuilder.addChild() now supports adding DomBuilders in addition to HTML elements
+
+
+--------
+### [0.2.0](https://github.com/TeamworkGuy2/dom-builder/commit/2870cc4ee9f8c272827ca485fe2a0a9515475efc) - 2017-01-28
 #### Changed
 * Added method expectNode() to DomValidate interface
 * DomBuilder internal changes to make extending it easier

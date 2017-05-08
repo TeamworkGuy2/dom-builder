@@ -31,7 +31,7 @@ interface DomBuilder<T extends HTMLElement> {
 
     text(textContent: string | number | boolean): DomBuilder<T>;
 
-    addChild<S extends HTMLElement>(elems: S | S[]): DomBuilder<T>;
+    addChild<S extends HTMLElement>(elems: S | S[] | DomBuilder<S> | DomBuilder<S>[]): DomBuilder<T>;
 
     textOrChild(textOrElem: string | number | boolean | HTMLElement): DomBuilder<T>;
 
@@ -46,22 +46,7 @@ interface DomBuilder<T extends HTMLElement> {
  * @since 2016-04-26
  */
 interface DomBuilderFactory {
-    create(elemName: "a"): DomBuilder<HTMLAnchorElement>;
-    create(elemName: "div"): DomBuilder<HTMLDivElement>;
-    create(elemName: "li"): DomBuilder<HTMLLIElement>;
-    create(elemName: "link"): DomBuilder<HTMLLinkElement>;
-    create(elemName: "ol"): DomBuilder<HTMLOListElement>;
-    create(elemName: "p"): DomBuilder<HTMLParagraphElement>;
-    create(elemName: "span"): DomBuilder<HTMLSpanElement>;
-    create(elemName: "table"): DomBuilder<HTMLTableElement>;
-    create(elemName: "tbody"): DomBuilder<HTMLTableSectionElement>;
-    create(elemName: "td"): DomBuilder<HTMLTableDataCellElement>;
-    create(elemName: "tfoot"): DomBuilder<HTMLTableSectionElement>;
-    create(elemName: "th"): DomBuilder<HTMLTableHeaderCellElement>;
-    create(elemName: "thead"): DomBuilder<HTMLTableSectionElement>;
-    create(elemName: "title"): DomBuilder<HTMLTitleElement>;
-    create(elemName: "tr"): DomBuilder<HTMLTableRowElement>;
-    create(elemName: "ul"): DomBuilder<HTMLUListElement>;
+    create<P extends keyof HTMLElementTagNameMap>(elemName: P): DomBuilder<HTMLElementTagNameMap[P]>;
     create(elemName: string, namespace?: string): DomBuilder<HTMLElement>;
 }
 

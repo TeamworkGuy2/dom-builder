@@ -132,14 +132,15 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public addChild<S extends HTMLElement>(elems: S | S[]) {
+    public addChild<S extends HTMLElement>(elems: S | S[] | DomBuilder<S> | DomBuilder<S>[]) {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
-                this.elem.appendChild(elems[i]);
+                var el = elems[i];
+                this.elem.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
             }
         }
         else if (elems) {
-            this.elem.appendChild(elems);
+            this.elem.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
         }
         return this;
     }
@@ -160,6 +161,11 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     public onEvent(eventName: string, handler: (evt: Event) => any, useCapture: boolean = false) {
         this.elem.addEventListener(eventName, handler, useCapture);
         return this;
+    }
+
+
+    private static isDomBuilder<S extends HTMLElement>(elem: S | DomBuilder<S>): elem is DomBuilder<S> {
+        return (<DomBuilder<S>>elem).textOrChild !== undefined && (<DomBuilder<S>>elem).attr !== undefined;
     }
 
 

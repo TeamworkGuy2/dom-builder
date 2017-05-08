@@ -32,6 +32,7 @@ class DomBuilderFactory implements domBldr.BuilderFactory {
     }
 
 
+    public create<P extends keyof HTMLElementTagNameMap>(elemName: P): DomBuilder<HTMLElementTagNameMap[P]>;
     public create<T extends HTMLElement>(elemName: string, namespace?: string): DomBuilder<T> {
         var elem = namespace == null ? this.dom.createElement(elemName) : <HTMLElement>this.dom.createElementNS(namespace, elemName);
         return <any>DomBuilderImpl.newInst(elem, this.dom);
