@@ -1,5 +1,5 @@
 "use strict";
-/** Functions for handling XMLDocument objects
+/** Helper functions for XMLDocument Node attributes and children
  * @since 2016-04-27
  */
 var DomBuilderHelper = (function () {
@@ -45,31 +45,30 @@ var DomBuilderHelper = (function () {
         return attr ? parser(attr.value) : null;
     };
     // ==== Get attributes from Node ====
-    DomBuilderHelper.prototype.getNodeAttrInt = function (elem, attrName, ifNullReturnNull) {
-        return this._nodeAttrParse(elem, attrName, parseInt, ifNullReturnNull);
+    DomBuilderHelper.prototype.getNodeAttrInt = function (elem, attrName, defaultValue) {
+        return this._nodeAttrParse(elem, attrName, parseInt, defaultValue);
     };
-    DomBuilderHelper.prototype.getNodeAttrFloat = function (elem, attrName, ifNullReturnNull) {
-        return this._nodeAttrParse(elem, attrName, parseFloat, ifNullReturnNull);
+    DomBuilderHelper.prototype.getNodeAttrFloat = function (elem, attrName, defaultValue) {
+        return this._nodeAttrParse(elem, attrName, parseFloat, defaultValue);
     };
-    DomBuilderHelper.prototype.getNodeAttrBool = function (elem, attrName, ifNullReturnNull) {
-        return this._nodeAttrParse(elem, attrName, Boolean, ifNullReturnNull);
+    DomBuilderHelper.prototype.getNodeAttrBool = function (elem, attrName, defaultValue) {
+        return this._nodeAttrParse(elem, attrName, function (str) { return (str === "true"); }, defaultValue);
     };
-    DomBuilderHelper.prototype.getNodeAttrString = function (elem, attrName, ifNullReturnNull) {
-        return this._nodeAttrParse(elem, attrName, String, ifNullReturnNull);
+    DomBuilderHelper.prototype.getNodeAttrString = function (elem, attrName, defaultValue) {
+        return this._nodeAttrParse(elem, attrName, String, defaultValue);
     };
-    DomBuilderHelper.prototype._nodeAttrParse = function (elem, attrName, parser, ifNullReturnNull) {
+    DomBuilderHelper.prototype._nodeAttrParse = function (elem, attrName, parser, defaultValue) {
         if (elem == null) {
             return null;
         }
         var attr = elem.attributes.getNamedItem(attrName);
-        return ifNullReturnNull && attr == null ? null : parser(attr.value);
+        return attr != null ? parser(attr.value) : (defaultValue != null ? defaultValue : null);
     };
     DomBuilderHelper.prototype.removeNodeAttr = function (elem, name) {
         if (elem) {
             elem.attributes.removeNamedItem(name);
         }
     };
-    /** get multiple attributes from a Node and return them as an object */
     DomBuilderHelper.prototype.getNodeAttrs = function (elem, attrNames, skipNull) {
         var res = {};
         if (elem == null) {

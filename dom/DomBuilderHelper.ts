@@ -1,6 +1,6 @@
 ﻿import domBldr = require("dom-builder");
 
-/** Functions for handling XMLDocument objects
+/** Helper functions for XMLDocument Node attributes and children
  * @since 2016-04-27
  */
 class DomBuilderHelper implements domBldr.BuilderHelper {
@@ -16,11 +16,11 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    private _dom: Document;
+    private _dom: DocumentLike;
     private _validator: DomValidate;
 
 
-    constructor(dom: Document, validator: DomValidate) {
+    constructor(dom: DocumentLike, validator: DomValidate) {
         this._dom = dom;
         this._validator = validator;
     }
@@ -37,6 +37,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     // ==== Element.attributes utils ====
+
     public attrInt(attrs: NamedNodeMap, name: string, val?: number): number {
         return this._attrGetOrSet(attrs, name, parseInt, val !== undefined ? String(val) : undefined);
     }
@@ -57,7 +58,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMap, name: string, parser: (str: string) => T, val?: string): T {
+    private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMapLike, name: string, parser: (str: string) => T, val?: string): T {
         if (val != null) {
             var attr = this._dom.createAttribute(name);
             attr.value = val;
@@ -70,34 +71,35 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     // ==== Get attributes from Node ====
-    public getNodeAttrInt(elem: Node, attrName: string, ifNullReturnNull?: boolean): number {
-        return this._nodeAttrParse(elem, attrName, parseInt, ifNullReturnNull);
+
+    public getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number {
+        return this._nodeAttrParse(elem, attrName, parseInt, defaultValue);
     }
 
 
-    public getNodeAttrFloat(elem: Node, attrName: string, ifNullReturnNull?: boolean): number {
-        return this._nodeAttrParse(elem, attrName, parseFloat, ifNullReturnNull);
+    public getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number {
+        return this._nodeAttrParse(elem, attrName, parseFloat, defaultValue);
     }
 
 
-    public getNodeAttrBool(elem: Node, attrName: string, ifNullReturnNull?: boolean): boolean {
-        return this._nodeAttrParse(elem, attrName, Boolean, ifNullReturnNull);
+    public getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean {
+        return this._nodeAttrParse(elem, attrName, (str) => (str === "true"), defaultValue);
     }
 
 
-    public getNodeAttrString(elem: Node, attrName: string, ifNullReturnNull?: boolean): string {
-        return this._nodeAttrParse(elem, attrName, String, ifNullReturnNull);
+    public getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string {
+        return this._nodeAttrParse(elem, attrName, String, defaultValue);
     }
 
 
-    private _nodeAttrParse<T>(elem: Node, attrName: string, parser: (str: string) => T, ifNullReturnNull?: boolean): T {
+    private _nodeAttrParse<T>(elem: HasAttributes, attrName: string, parser: (str: string) => T, defaultValue?: T): T {
         if (elem == null) { return null; }
         var attr = elem.attributes.getNamedItem(attrName);
-        return ifNullReturnNull && attr == null ? null : parser(attr.value);
+        return attr != null ? parser(attr.value) : (defaultValue != null ? defaultValue : null);
     }
 
 
-    public removeNodeAttr(elem: Node, name: string) {
+    public removeNodeAttr(elem: HasAttributes, name: string) {
         if (elem) {
             elem.attributes.removeNamedItem(name);
         }
@@ -105,8 +107,9 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     /** get multiple attributes from a Node and return them as an object */
-    public getNodeAttrs<T>(elem: Node, attrNames: string[], skipNull?: boolean): T {
-        var res = {};
+    public getNodeAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string };
+    public getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T {
+        var res = <T>{};
         if (elem == null) {
             return <T>res;
         }
@@ -123,11 +126,13 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     // ==== .children ====
+
     public queryOneChild<T extends Element>(parent: NodeSelector | T, selectors: string): T {
         // TODO only the newest browsers support this
         var res = (<T>parent.querySelector(":scope > " + selectors));
         return res;
     }
+
 
     public queryOneAndGetChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
         var res = (<HTMLElement>parent.querySelector(selectors));
@@ -136,11 +141,13 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
         return resAry;
     }
 
+
     public queryAll<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
         var res = parent.querySelectorAll(selectors);
         var resAry = Array.prototype.slice.call(res);
         return resAry;
     }
+
 
     public queryAllChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
         // TODO only the newest browsers support this
@@ -148,7 +155,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    public getChilds<T extends Node>(elem: T): T[] {
+    public getChilds<T extends NodeLike>(elem: T): T[] {
         var resAry = Array.prototype.slice.call(elem.childNodes);
         return resAry;
     }
@@ -162,7 +169,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    public addChilds(parent: Element, childs: Element[] | ArrayLike<Element>) {
+    public addChilds(parent: ElementLike, childs: ElementLike[] | ArrayLike<ElementLike>) {
         for (var i = 0, size = childs.length; i < size; i++) {
             parent.appendChild(childs[i]);
         }

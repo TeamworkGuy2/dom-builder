@@ -1,7 +1,7 @@
 "use strict";
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
- * Reduces the code required to create and setup a new element for insertion into the DOM.
- * Includes functions to set the element's ID, add class names, add styles, set attributes, set the element's text content, or add child elements.
+ * Reduces the code required to create and setup a new element for insertion into a Document.
+ * Includes functions to set the element's ID, add class names, add styles, set attributes, set the element's text content, and add child elements.
  * Access the 'element' property at any time to retrieve the underlying DOM element.
  * @author TeamworkGuy2
  * @since 2016-04-26
@@ -120,7 +120,7 @@ var DomBuilder = (function () {
     };
     DomBuilder.prototype.textOrChild = function (textOrElem) {
         var type = typeof textOrElem;
-        if (textOrElem.nodeType) {
+        if (textOrElem.nodeName) {
             this.addChild(textOrElem);
         }
         else {

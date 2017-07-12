@@ -10,19 +10,19 @@ import DomBuilderImpl = require("./DomBuilder");
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
-class DomBuilderFactory implements domBldr.BuilderFactory {
-    private dom: Document;
+class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactory {
+    private dom: DocumentLike;
 
 
-    constructor(dom: Document) {
+    constructor(dom: Document | DocumentLike) {
         this.dom = dom;
     }
 
 
     /** Create an HTML <a> element
      */
-    public newLink(displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): DomBuilder<HTMLAnchorElement> {
-        var anchor = this.dom.createElement("a");
+    public newLink(doc: Document, displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): DomBuilder<HTMLAnchorElement> {
+        var anchor = doc.createElement("a");
         anchor.text = displayText;
         anchor.href = url;
         if (clickHandler) {
@@ -33,31 +33,31 @@ class DomBuilderFactory implements domBldr.BuilderFactory {
 
 
     public create<P extends keyof HTMLElementTagNameMap>(elemName: P): DomBuilder<HTMLElementTagNameMap[P]>;
-    public create<T extends HTMLElement>(elemName: string, namespace?: string): DomBuilder<T> {
-        var elem = namespace == null ? this.dom.createElement(elemName) : <HTMLElement>this.dom.createElementNS(namespace, elemName);
-        return <any>DomBuilderImpl.newInst(elem, this.dom);
+    public create<T extends ElementLike>(elemName: string, namespace?: string): DomBuilder<T> {
+        var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
+        return <DomBuilder<any>>DomBuilderImpl.newInst(elem, this.dom);
     }
 
 
     /**
      * @param textElementTypeName: i.e. 'span', 'div', 'p', etc.
      */
-    public elementOrTextTo(textElementTypeName: string, textOrElem: string | HTMLElement): HTMLElement {
+    public elementOrTextTo<E extends ElementLike>(textElementTypeName: string, textOrElem: string | E): E {
         if (typeof textOrElem === "string") {
-            var elem = this.dom.createElement(textElementTypeName);
-            elem.textContent = <string>textOrElem;
+            var elem = <E>this.dom.createElement(textElementTypeName);
+            elem.textContent = textOrElem;
             return elem;
         }
         else {
-            return <HTMLElement>textOrElem;
+            return textOrElem;
         }
     }
 
 
     /** Transform an array of strings into an array of DOM nodes with <br> elements between each line
      */
-    public toTextWithLineBreaks(lines: string[]): Node[] {
-        var lineElems: Node[] = [];
+    public toTextWithLineBreaks(lines: string[]): NodeLike[] {
+        var lineElems: NodeLike[] = [];
         for (var i = 0, size = lines.length; i < size; i++) {
             var line = lines[i];
             if (line.endsWith("<br/>")) {

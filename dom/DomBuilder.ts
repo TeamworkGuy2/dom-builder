@@ -1,18 +1,18 @@
 ﻿import domBldr = require("dom-builder");
 
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
- * Reduces the code required to create and setup a new element for insertion into the DOM.
- * Includes functions to set the element's ID, add class names, add styles, set attributes, set the element's text content, or add child elements.
+ * Reduces the code required to create and setup a new element for insertion into a Document.
+ * Includes functions to set the element's ID, add class names, add styles, set attributes, set the element's text content, and add child elements.
  * Access the 'element' property at any time to retrieve the underlying DOM element.
  * @author TeamworkGuy2
  * @since 2016-04-26
  */
-class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
+class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBldr.Builder<T> {
     private elem: T;
-    private dom: Document;
+    private dom: D;
 
 
-    constructor(elem: T, dom: Document) {
+    constructor(elem: T, dom: D) {
         this.elem = elem;
         this.dom = dom;
     }
@@ -50,7 +50,7 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public styles(styles: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T> {
+    public styles(styles: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T, D> {
         var elemStyle = this.elem.style;
 
         if (styles) {
@@ -66,7 +66,7 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public style(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T> {
+    public style(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T, D> {
         if (!skipNull || value != null) {
             this.elem.style[name] = value ? String(value) : value;
         }
@@ -74,9 +74,9 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T>;
-    public attrs<U extends {}>(attrs: U, skipNulls?: boolean): DomBuilder<T>;
-    public attrs(attrs: any, skipNulls?: boolean): DomBuilder<T> {
+    public attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T, D>;
+    public attrs<U extends {}>(attrs: U, skipNulls?: boolean): DomBuilder<T, D>;
+    public attrs(attrs: any, skipNulls?: boolean): DomBuilder<T, D> {
         var elemAttrs = this.elem.attributes;
 
         if (attrs) {
@@ -95,27 +95,27 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public attr(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T> {
+    public attr(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T, D> {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrBool(name: string, value: boolean, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): DomBuilder<T> {
+    public attrBool(name: string, value: boolean, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): DomBuilder<T, D> {
         return this._attr(name, skipFalseOrNull && (value == null || value == false) ? null : value === true ? (trueVal !== undefined ? trueVal : "true") : (falseVal !== undefined ? falseVal : "false"), skipFalseOrNull);
     }
 
-    public attrInt(name: string, value: number, skipNull?: boolean): DomBuilder<T> {
+    public attrInt(name: string, value: number, skipNull?: boolean): DomBuilder<T, D> {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrFloat(name: string, value: number, skipNull?: boolean): DomBuilder<T> {
+    public attrFloat(name: string, value: number, skipNull?: boolean): DomBuilder<T, D> {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrString(name: string, value: string, skipEmptyOrNull?: boolean): DomBuilder<T> {
+    public attrString(name: string, value: string, skipEmptyOrNull?: boolean): DomBuilder<T, D> {
         return this._attr(name, skipEmptyOrNull && (value == null || value.length === 0) ? null : value, skipEmptyOrNull);
     }
 
-    private _attr(name: string, value: string, skipNull?: boolean): DomBuilder<T> {
+    private _attr(name: string, value: string, skipNull?: boolean): DomBuilder<T, D> {
         var elemAttrs = this.elem.attributes;
         if (!skipNull || value != null) {
             var attr = this.dom.createAttribute(name);
@@ -132,7 +132,7 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public addChild<S extends HTMLElement>(elems: S | S[] | DomBuilder<S> | DomBuilder<S>[]) {
+    public addChild<S extends ElementLike>(elems: S | S[] | DomBuilder<S, D> | DomBuilder<S, D>[]) {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
                 var el = elems[i];
@@ -146,10 +146,10 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    public textOrChild(textOrElem: string | number | boolean | HTMLElement) {
+    public textOrChild(textOrElem: string | number | boolean | ElementLike) {
         var type = typeof textOrElem;
-        if ((<HTMLElement>textOrElem).nodeType) {
-            this.addChild(<HTMLElement>textOrElem);
+        if ((<ElementLike>textOrElem).nodeName) {
+            this.addChild(<ElementLike>textOrElem);
         }
         else {
             this.text(<string | number | boolean>textOrElem);
@@ -164,12 +164,12 @@ class DomBuilder<T extends HTMLElement> implements domBldr.Builder<T> {
     }
 
 
-    private static isDomBuilder<S extends HTMLElement>(elem: S | DomBuilder<S>): elem is DomBuilder<S> {
-        return (<DomBuilder<S>>elem).textOrChild !== undefined && (<DomBuilder<S>>elem).attr !== undefined;
+    private static isDomBuilder<S extends ElementLike, D extends DocumentLike>(elem: S | DomBuilder<S, D>): elem is DomBuilder<S, D> {
+        return (<DomBuilder<S, D>>elem).textOrChild !== undefined && (<DomBuilder<S, D>>elem).attr !== undefined;
     }
 
 
-    public static newInst<U extends HTMLElement>(elem: U, dom: Document, id?: string, classes?: string | string[], styles?: { [name: string]: string | number }) {
+    public static newInst<U extends ElementLike>(elem: U, dom: DocumentLike, id?: string, classes?: string | string[], styles?: { [name: string]: string | number }) {
         var inst = new DomBuilder(elem, dom);
         inst.id(id).class(classes).styles(styles);
         return inst;

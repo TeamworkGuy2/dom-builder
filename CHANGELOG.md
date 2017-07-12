@@ -4,7 +4,25 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.2.1](N/A) - 2017-05-08
+### [0.3.0](N/A) - 2017-07-12
+#### Added
+* DomLite a very basic virtual DOM implementation, currently only partially implements 'id', 'nodeName', 'attribute', 'childNodes', 'classList', and 'style' Element properties.  The bare minimum needed to meet the needs of libraries like [xlsx-spec-utils](https://github.com/TeamworkGuy2/xlsx-spec-utils) and [xlsx-spec-models](https://github.com/TeamworkGuy2/xlsx-spec-models).
+* Added first unit tests for DomLite and DomBuilderHelper using chai & mocha
+* Updated README
+
+#### Changed
+* Extensive dom-builder interface changes
+* Nearly all DOM types like Node, Element, and HTMLElement have been replaced with '-Like' interfaces such as `DocumentLike` and `ElementLike`
+* DomBuilder class now takes two generic parameters, the element type and document type
+* DomBuilderFactory.newLink takes a 'doc' parameter
+* DomBuilderHelper.getNodeAttr*() methods 'ifNullReturnNull' parameter changed to 'defaultValue'; i.e. signature looks like getNodeAttrInt(elem, attrName, [defaultValue])
+
+#### Fixed
+* DomBuilderHelper.getNodeAttrBool() not parsing false attributes properly
+
+
+--------
+### [0.2.1](https://github.com/TeamworkGuy2/dom-builder/commit/1398109ec0265d5f460ae0b022e646c905e3f430) - 2017-05-08
 #### Changed
 * Expanded DomBuilderFactory.create() to use HTMLElementTagNameMap for all HTML element types/names
 * DomBuilder.addChild() now supports adding DomBuilders in addition to HTML elements

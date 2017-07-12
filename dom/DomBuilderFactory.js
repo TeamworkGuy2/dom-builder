@@ -15,8 +15,8 @@ var DomBuilderFactory = (function () {
     }
     /** Create an HTML <a> element
      */
-    DomBuilderFactory.prototype.newLink = function (displayText, url, clickHandler) {
-        var anchor = this.dom.createElement("a");
+    DomBuilderFactory.prototype.newLink = function (doc, displayText, url, clickHandler) {
+        var anchor = doc.createElement("a");
         anchor.text = displayText;
         anchor.href = url;
         if (clickHandler) {
