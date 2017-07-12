@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.3.0](N/A) - 2017-07-12
+### [0.4.0](N/A) - 2017-07-12
+#### Changed
+* Renamed DomBuilder.class() to classes() (meant to include in 0.3.0)
+
+
+--------
+### [0.3.0](https://github.com/TeamworkGuy2/dom-builder/commit/75b6e20e3f490ac81e085986b3946f79a58d0dd5) - 2017-07-12
 #### Added
 * DomLite a very basic virtual DOM implementation, currently only partially implements 'id', 'nodeName', 'attribute', 'childNodes', 'classList', and 'style' Element properties.  The bare minimum needed to meet the needs of libraries like [xlsx-spec-utils](https://github.com/TeamworkGuy2/xlsx-spec-utils) and [xlsx-spec-models](https://github.com/TeamworkGuy2/xlsx-spec-models).
 * Added first unit tests for DomLite and DomBuilderHelper using chai & mocha

@@ -1,6 +1,6 @@
 ﻿
 /** A wrapper for an HTMLElement with chainable functions for manipulating the underlying HTMLElement.
- * For example, adding 'class' names the the element is just 'domBldr.class("...")'.
+ * For example, adding 'class' names the the element is just 'domBldr.classes("...")'.
  * And once the HTMLElement is setup, use the 'element' property to retrieve it
  * @author TeamworkGuy2
  * @since 2016-04-25
@@ -8,7 +8,7 @@
 interface DomBuilder<T extends ElementLike> {
     element: T;
 
-    class(classNames: string | string[]): DomBuilder<T>;
+    classes(classNames: string | string[]): DomBuilder<T>;
 
     id(id: string): DomBuilder<T>;
 

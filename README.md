@@ -10,7 +10,7 @@ Easily switch back and forth between native Javascript DOM code and dom-builder,
 var creator = new DomBuilderFactory(window.document);
 var div = creator.create('div')
 	.addChild(creator.create('span').style('color', 'green'))
-	.class(['root-container', 'col-8'])
+	.classes(['root-container', 'col-8'])
 	.element;
 ```
 
@@ -31,7 +31,7 @@ var creator = new DomBuilderFactory(new DomLite.DocLike('http://an.xml/namespace
 ```ts
 var div = new DomBuilder(window.document.createElement('div'), window.document)
 	.style('font-weight', '600')
-	.class('cool-button')
+	.classes('cool-button')
 	.styles({ width: '200px', height: '120px', background: 'green' }) // add multiple styles at once
 	.text('click me!');
 

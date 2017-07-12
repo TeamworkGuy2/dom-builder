@@ -25,7 +25,7 @@ var DomBuilder = (function () {
         enumerable: true,
         configurable: true
     });
-    DomBuilder.prototype.class = function (classNames) {
+    DomBuilder.prototype.classes = function (classNames) {
         var clsList = this.elem.classList;
         if (Array.isArray(classNames)) {
             for (var i = 0, size = classNames.length; i < size; i++) {
@@ -138,7 +138,7 @@ var DomBuilder = (function () {
     };
     DomBuilder.newInst = function (elem, dom, id, classes, styles) {
         var inst = new DomBuilder(elem, dom);
-        inst.id(id).class(classes).styles(styles);
+        inst.id(id).classes(classes).styles(styles);
         return inst;
     };
     return DomBuilder;

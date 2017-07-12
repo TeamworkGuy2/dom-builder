@@ -28,7 +28,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    public class(classNames: string | string[]) {
+    public classes(classNames: string | string[]) {
         var clsList = this.elem.classList;
         if (Array.isArray(classNames)) {
             for (var i = 0, size = classNames.length; i < size; i++) {
@@ -171,7 +171,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
     public static newInst<U extends ElementLike>(elem: U, dom: DocumentLike, id?: string, classes?: string | string[], styles?: { [name: string]: string | number }) {
         var inst = new DomBuilder(elem, dom);
-        inst.id(id).class(classes).styles(styles);
+        inst.id(id).classes(classes).styles(styles);
         return inst;
     }
 
