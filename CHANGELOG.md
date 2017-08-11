@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.4.0](N/A) - 2017-07-12
+### [0.4.1](N/A) - 2017-08-11
+#### Changed
+* Update to TypeScript 2.4
+
+
+--------
+### [0.4.0](https://github.com/TeamworkGuy2/dom-builder/commit/9a7ccbc07d374fce3d5960770263b53fba22e315) - 2017-07-12
 #### Changed
 * Renamed DomBuilder.class() to classes() (meant to include in 0.3.0)
 

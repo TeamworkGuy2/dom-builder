@@ -1,5 +1,5 @@
 ﻿import domBldr = require("dom-builder");
-import DomBuilderImpl = require("./DomBuilder");
+import DomBuilder = require("./DomBuilder");
 
 /** A factory for creating DOM elements.
  * Includes methods for common DOM setup that requires a lot of native JS DOM code):
@@ -21,21 +21,21 @@ class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactor
 
     /** Create an HTML <a> element
      */
-    public newLink(doc: Document, displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): DomBuilder<HTMLAnchorElement> {
+    public newLink(doc: Document, displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): domBldr.Builder<HTMLAnchorElement> {
         var anchor = doc.createElement("a");
         anchor.text = displayText;
         anchor.href = url;
         if (clickHandler) {
             anchor.addEventListener("click", clickHandler);
         }
-        return DomBuilderImpl.newInst(anchor, this.dom);
+        return DomBuilder.newInst(anchor, this.dom);
     }
 
 
-    public create<P extends keyof HTMLElementTagNameMap>(elemName: P): DomBuilder<HTMLElementTagNameMap[P]>;
-    public create<T extends ElementLike>(elemName: string, namespace?: string): DomBuilder<T> {
+    public create<P extends keyof HTMLElementTagNameMap>(elemName: P): domBldr.Builder<HTMLElementTagNameMap[P]>;
+    public create<T extends ElementLike>(elemName: string, namespace?: string): domBldr.Builder<T> {
         var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
-        return <DomBuilder<any>>DomBuilderImpl.newInst(elem, this.dom);
+        return <domBldr.Builder<any>>DomBuilder.newInst(elem, this.dom);
     }
 
 

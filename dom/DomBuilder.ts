@@ -75,7 +75,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
 
     public attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T, D>;
-    public attrs<U extends {}>(attrs: U, skipNulls?: boolean): DomBuilder<T, D>;
+    public attrs<U extends object>(attrs: U, skipNulls?: boolean): DomBuilder<T, D>;
     public attrs(attrs: any, skipNulls?: boolean): DomBuilder<T, D> {
         var elemAttrs = this.elem.attributes;
 
@@ -132,7 +132,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    public addChild<S extends ElementLike>(elems: S | S[] | DomBuilder<S, D> | DomBuilder<S, D>[]) {
+    public addChild<S extends ElementLike>(elems: S | S[] | domBldr.Builder<S> | domBldr.Builder<S>[]) {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
                 var el = elems[i];
@@ -164,8 +164,8 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    private static isDomBuilder<S extends ElementLike, D extends DocumentLike>(elem: S | DomBuilder<S, D>): elem is DomBuilder<S, D> {
-        return (<DomBuilder<S, D>>elem).textOrChild !== undefined && (<DomBuilder<S, D>>elem).attr !== undefined;
+    private static isDomBuilder<S extends ElementLike, D extends DocumentLike>(elem: S | domBldr.Builder<S>): elem is domBldr.Builder<S> {
+        return (<domBldr.Builder<S>>elem).textOrChild !== undefined && (<domBldr.Builder<S>>elem).attr !== undefined;
     }
 
 
