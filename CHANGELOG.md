@@ -4,7 +4,14 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.4.1](N/A) - 2017-08-11
+### [0.5.0](N/A) - 2017-11-16
+#### Changed
+* `package.json` added `strictNullChecks` and fixed code to handle nullable types
+* added/improved unit tests
+
+
+--------
+### [0.4.1](https://github.com/TeamworkGuy2/dom-builder/commit/fe4375294e67a993919e9bd6dcc26b915dd7aa97) - 2017-08-11
 #### Changed
 * Update to TypeScript 2.4
 

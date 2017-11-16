@@ -1,6 +1,6 @@
 {
   "name": "dom-builder",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "TypeScript DOM builder utils, static helpers for element attributes and childNodes, and a virtual DOM implementation.",
   "author": "TeamworkGuy2",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "@types/mocha": "~2.2.0",
     "@types/node": "~8.0.0",
     "chai": "~4.1.0",
-    "mocha": "~3.5.0",
+    "mocha": "~4.0.0",
     "typescript": "~2.4.0"
   },
   "scripts": {

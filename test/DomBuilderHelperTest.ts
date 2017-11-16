@@ -7,7 +7,7 @@ var asr = chai.assert;
 suite("DomBuilderHelper", function domLite() {
 
     test("getNodeAttrs", function getNodeAttrsTest() {
-        var dh = new DomBuilderHelper(null, null);
+        var dh = new DomBuilderHelper(<any>null, <any>null);
         var attributes = DomLite.createNamedNodeMap([
             { name: "attr1", value: "A1" },
             { name: "attr2", value: "2" },

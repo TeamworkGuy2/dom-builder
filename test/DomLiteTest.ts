@@ -10,7 +10,7 @@ suite("DomLite", function domLite() {
         var txt = DomLite.createTextNode("abc");
         asr.equal(txt.nodeValue, "abc");
         asr.isNull(txt.attributes);
-        asr.throws(() => txt.appendChild(null));
+        asr.throws(() => txt.appendChild(<any>null));
 
         var txt2 = txt.cloneNode();
         var txt3 = txt.cloneNode(true);
@@ -87,21 +87,47 @@ suite("DomLite", function domLite() {
     });
 
 
+    test("cssStyles", function cssStylesTest() {
+        var el = DomLite.createElement("div");
+        var st = el.style;
+        st.zIndex = "123";
+        st.backgroundColor = "#999";
+        asr.equal(st.length, 2);
+        asr.deepEqual(Object.keys(st).map((k) => st[k]), ["123", "#999"]);
+        asr.equal(st.zIndex, "123");
+        asr.equal(st.item(1), "#999");
+    });
+
 
     test("attributes", function attributesTest() {
         var el = DomLite.createElement("div");
         var attrs = el.attributes;
-        var attr1 = newAttr("attr-1", 123);
-        asr.isNull(attrs.getNamedItem("attr-1"));
+        var attr1 = newAttr("a1", 123);
+        asr.isNull(attrs.getNamedItem("a1"));
         attrs.setNamedItem(attr1);
         asr.equal(attrs.item(0), attr1);
-        asr.equal(attrs.getNamedItem("attr-1"), attr1);
+        asr.equal(attrs.getNamedItem("a1"), attr1);
 
-        var attr2 = newAttr("attr-2", "abc");
+        var attr2 = newAttr("a2", "abc");
         attrs.setNamedItemNS(attr2);
         asr.equal(attrs.length, 2);
-        attrs.removeNamedItem("attr-1");
+        asr.isNotNull(attrs.removeNamedItem("a1"));
         asr.equal(attrs[0], attr2);
+    });
+
+
+    test("attributes enumerable", function attributesEnumerableTest() {
+        var attr1 = newAttr("a1", 123);
+        var attr2 = newAttr("a2", "abc");
+
+        var attrs = DomLite.createNamedNodeMap();
+        attrs.setNamedItem(attr1);
+        attrs.setNamedItem(attr2);
+
+        var el = DomLite.createElement("div");
+        el.attributes.setNamedItem(attr1);
+        el.attributes.setNamedItem(attr2);
+        asr.deepEqual(Object.keys(el.attributes), ["0", "1"]);
     });
 
 
@@ -124,9 +150,9 @@ suite("DomLite", function domLite() {
         c22.attributes.setNamedItem(newAttr("ref", "r2c2"));
         c22.attributes.setNamedItem(newAttr("type", 122));
 
-        asr.equal(c11.attributes.getNamedItem("ref").value, "r1c1");
-        asr.equal(c21.attributes.item(0).value, "r2c1");
-        asr.equal(c22.attributes.getNamedItemNS(null, "ref").value, "r2c2");
+        asr.equal((<AttributeLike>c11.attributes.getNamedItem("ref")).value, "r1c1");
+        asr.equal((<AttributeLike>c21.attributes.item(0)).value, "r2c1");
+        asr.equal((<AttributeLike>c22.attributes.getNamedItemNS(null, "ref")).value, "r2c2");
 
         asr.equal(doc.toString(),
             '<sheet xmlns="zzz://some.url/a/path/">' +

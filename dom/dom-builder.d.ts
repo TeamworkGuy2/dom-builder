@@ -64,22 +64,22 @@ interface DomBuilderHelper {
     getSerializer(): XMLSerializer;
 
     // ==== Element.attributes utils ====
-    attrInt(attrs: NamedNodeMapLike, name: string, val?: number): number;
+    attrInt(attrs: NamedNodeMapLike, name: string, val?: number): number | null;
 
-    attrFloat(attrs: NamedNodeMapLike, name: string, val?: number): number;
+    attrFloat(attrs: NamedNodeMapLike, name: string, val?: number): number | null;
 
-    attrBool(attrs: NamedNodeMapLike, name: string, val?: boolean): boolean;
+    attrBool(attrs: NamedNodeMapLike, name: string, val?: boolean): boolean | null;
 
-    attrString(attrs: NamedNodeMapLike, name: string, val?: string): string;
+    attrString(attrs: NamedNodeMapLike, name: string, val?: string): string | null;
 
     // ==== Get attributes from Node ====
-    getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number;
+    getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number | null;
 
-    getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number;
+    getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number | null;
 
-    getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean;
+    getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean | null;
 
-    getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string;
+    getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string | null;
 
     removeNodeAttr(elem: HasAttributes, name: string): void;
 
@@ -150,13 +150,13 @@ interface NamedNodeMapLike {
     readonly length: number;
     [index: number]: AttributeLike;
 
-    getNamedItem(name: string): AttributeLike;
-    getNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike;
+    getNamedItem(name: string): AttributeLike | null;
+    getNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike | null;
 
-    item(index: number): AttributeLike;
+    item(index: number): AttributeLike | null;
 
-    removeNamedItem(name: string): AttributeLike;
-    removeNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike;
+    removeNamedItem(name: string): AttributeLike | null;
+    removeNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike | null;
 
     setNamedItem(arg: AttributeLike): AttributeLike;
     setNamedItemNS(arg: AttributeLike): AttributeLike;
@@ -165,7 +165,7 @@ interface NamedNodeMapLike {
 
 interface NodeLike {
     nodeName: string;
-    nodeValue: string;
+    nodeValue: string | null;
     attributes: NamedNodeMapLike;
     readonly childNodes: NodeListLike;
     textContent: string | null;

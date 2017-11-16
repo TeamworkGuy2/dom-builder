@@ -79,7 +79,7 @@ var DomBuilderHelper = (function () {
             var attrName = attrNames[i];
             var attr = attrs.getNamedItem(attrName);
             if (!skipNull || attr != null) {
-                res[attrName] = attr.value;
+                res[attrName] = attr != null ? attr.value : null;
             }
         }
         return res;

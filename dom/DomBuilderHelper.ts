@@ -38,29 +38,29 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== Element.attributes utils ====
 
-    public attrInt(attrs: NamedNodeMap, name: string, val?: number): number {
+    public attrInt(attrs: NamedNodeMap, name: string, val?: number): number | null {
         return this._attrGetOrSet(attrs, name, parseInt, val !== undefined ? String(val) : undefined);
     }
 
 
-    public attrFloat(attrs: NamedNodeMap, name: string, val?: number): number {
+    public attrFloat(attrs: NamedNodeMap, name: string, val?: number): number | null {
         return this._attrGetOrSet(attrs, name, parseFloat, val !== undefined ? String(val) : undefined);
     }
 
 
-    public attrBool(attrs: NamedNodeMap, name: string, val?: boolean, skipSetFalse: boolean = true): boolean {
+    public attrBool(attrs: NamedNodeMap, name: string, val?: boolean, skipSetFalse: boolean = true): boolean | null {
         return this._attrGetOrSet(attrs, name, (str) => str === "1" ? true : (str === "0" ? false : Boolean(str)), val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
     }
 
 
-    public attrString(attrs: NamedNodeMap, name: string, val?: string, skipSetEmpty: boolean = true): string {
+    public attrString(attrs: NamedNodeMap, name: string, val?: string, skipSetEmpty: boolean = true): string | null {
         return this._attrGetOrSet(attrs, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
     }
 
 
-    private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMapLike, name: string, parser: (str: string) => T, val?: string): T {
+    private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMapLike, name: string, parser: (str: string) => T, val: string | null | undefined): T | null {
         if (val != null) {
-            var attr = this._dom.createAttribute(name);
+            var attr: AttributeLike | null = this._dom.createAttribute(name);
             attr.value = val;
             attrs.setNamedItem(attr);
             return <any>val;
@@ -72,27 +72,27 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== Get attributes from Node ====
 
-    public getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number {
+    public getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number | null {
         return this._nodeAttrParse(elem, attrName, parseInt, defaultValue);
     }
 
 
-    public getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number {
+    public getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number | null {
         return this._nodeAttrParse(elem, attrName, parseFloat, defaultValue);
     }
 
 
-    public getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean {
+    public getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean | null {
         return this._nodeAttrParse(elem, attrName, (str) => (str === "true"), defaultValue);
     }
 
 
-    public getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string {
+    public getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string | null {
         return this._nodeAttrParse(elem, attrName, String, defaultValue);
     }
 
 
-    private _nodeAttrParse<T>(elem: HasAttributes, attrName: string, parser: (str: string) => T, defaultValue?: T): T {
+    private _nodeAttrParse<T>(elem: HasAttributes, attrName: string, parser: (str: string) => T, defaultValue?: T): T | null {
         if (elem == null) { return null; }
         var attr = elem.attributes.getNamedItem(attrName);
         return attr != null ? parser(attr.value) : (defaultValue != null ? defaultValue : null);
@@ -111,17 +111,17 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     public getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T {
         var res = <T>{};
         if (elem == null) {
-            return <T>res;
+            return res;
         }
         var attrs = elem.attributes;
         for (var i = 0, size = attrNames.length; i < size; i++) {
             var attrName = attrNames[i];
             var attr = attrs.getNamedItem(attrName);
             if (!skipNull || attr != null) {
-                res[attrName] = attr.value;
+                res[attrName] = attr != null ? attr.value : null;
             }
         }
-        return <T>res;
+        return res;
     }
 
 
@@ -162,7 +162,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     public removeChilds(elem: Element) {
-        var lastChild = null;
+        var lastChild: Node | null = null;
         while (lastChild = elem.lastChild) {
             elem.removeChild(lastChild);
         }

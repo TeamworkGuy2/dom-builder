@@ -4,8 +4,8 @@ TypeScript DOM Builder
 Dependencies:
 none
 
-TypeScript DOM builder utils.  Makes creating DOM elements and manipulating them in Javascript easier with nearly no performance overhead and transparent, library/helper oriented classes and functions.
-Easily switch back and forth between native Javascript DOM code and dom-builder, as simple as:
+Create and manipulate DOM elements in TypeScript easier with nearly no performance overhead and transparent, helper oriented, classes and functions.
+Easily switch between native Javascript DOM code and dom-builder, as simple as:
 ```ts
 var creator = new DomBuilderFactory(window.document);
 var div = creator.create('div')
@@ -18,11 +18,11 @@ Access the underlying DOM elements at any time via the DomBuilder's `.element` p
 
 `DomBuilderHelper` contains stateless methods for getting and setting element attributes, querying `childNodes`, and adding/removing child nodes.
 
-`dom-builder` also has a simple virtual DOM implementation for use in non-browser environments:
+#### `dom-builder` has a simple virtual DOM implementation for use in non-browser environments:
 ```ts
 var DomLite = require('.../DomLite');
 var creator = new DomBuilderFactory(new DomLite.DocLike('http://an.xml/namespace/schema', 'root-element'));
-// all subsequent creator.create(...) calls return virtual elements, useful for cases like building XLSX/ODF XML documents server side
+// creator.create(...) will return virtual elements, useful for cases like building XLSX/ODF XML documents server side
 ```
 
 

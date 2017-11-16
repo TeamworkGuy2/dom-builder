@@ -22,7 +22,7 @@ module DomLite {
     export class AttrLike implements AttributeLike {
         name: string;
         value: string;
-        ns: string;
+        ns: string | null;
 
         constructor(qualifiedName: string, value: string | number | boolean | null, namespaceUri?: string | null) {
             this.name = qualifiedName;
@@ -42,7 +42,7 @@ module DomLite {
         constructor(ns: string, rootNodeName: string) {
             this.doc = this.createElement(rootNodeName);
             if (ns != null) {
-                this.doc.attributes.setNamedItem({ name: "xmlns", value: ns });
+                (<NamedNodeMapLike>this.doc.attributes).setNamedItem({ name: "xmlns", value: ns });
             }
         }
 
@@ -68,7 +68,7 @@ module DomLite {
 
 
         public createTextNode(data: string) {
-            var inst = new ElemLike(null, null);
+            var inst = new ElemLike(<string><any>null, null);
             inst.nodeValue = data;
             return inst;
         }
@@ -86,15 +86,15 @@ module DomLite {
     export class ElemLike implements ElementLike {
         id: string;
         nodeName: string;
-        nodeValue: string;
+        nodeValue: string | null;
         textContent: string | null;
-        _attributes: NamedNodeMapLike & AttributeLike[];
-        _childNodes: NodeListLike & NodeLike[];
-        _classList?: DOMTokenList & string[];
-        _style?: CSSStyleDeclaration;
+        _attributes: (NamedNodeMapLike & AttributeLike[]) | null;
+        _childNodes: (NodeListLike & NodeLike[]) | null;
+        _classList?: (DOMTokenList & string[]) | null;
+        _style?: CSSStyleDeclaration | null;
 
 
-        constructor(qualifiedName: string, namespaceUri: string) {
+        constructor(qualifiedName: string, namespaceUri?: string | null) {
             this.nodeName = qualifiedName;
         }
 
@@ -112,12 +112,12 @@ module DomLite {
         }
 
         public get style() {
-            return this._style || (this._style = <any>createCssStyle());
+            return this._style || (this._style = createCssStyle());
         }
 
 
         public appendChild<T extends NodeLike>(newChild: T): T {
-            this._childNodes = this._childNodes || <any>createNodeList();
+            this._childNodes = this._childNodes || createNodeList();
             this._childNodes.push(newChild);
             return newChild;
         }
@@ -128,12 +128,12 @@ module DomLite {
         }
 
 
-        public toString(indent?: string, currentIndent?: string) {
+        public toString(indent?: string, currentIndent?: string | null) {
             var str = (currentIndent || "") + "<" + this.nodeName;
-            var attrs: string[] = (this._attributes != null ? [] : null);
+            var attrs: string[] | null = (this._attributes != null ? [] : null);
             for (var i = 0, size = this._attributes != null ? this._attributes.length : 0; i < size; i++) {
-                var attr = this._attributes[i];
-                attrs.push(attr.name + "=\"" + attr.value + "\"");
+                var attr = (<AttributeLike[]>this._attributes)[i];
+                (<string[]>attrs).push(attr.name + "=\"" + attr.value + "\"");
             }
             str += (attrs != null && attrs.length > 0 ? " " + attrs.join(" ") : "");
 
@@ -143,7 +143,7 @@ module DomLite {
             str += (!hasText && size < 1 ? " />" : (">" + (hasText ? this.textContent : "")));
 
             for (var i = 0; i < size; i++) {
-                str += (indent != null ? "\n" : "") + (<ElemLike>this._childNodes[i]).toString(indent, (indent != null ? (currentIndent ? currentIndent + indent : indent) : null));
+                str += (indent != null ? "\n" : "") + (<ElemLike[]><any[]>this._childNodes)[i].toString(indent, (indent != null ? (currentIndent ? currentIndent + indent : indent) : null));
             }
             if (hasText || size > 0) {
                 if (indent != null && size > 0) {
@@ -175,13 +175,13 @@ module DomLite {
 
     export class TextNodeLike implements NodeLike {
         nodeName: string;
-        nodeValue: string;
+        nodeValue: string | null;
         textContent: string | null;
-        attributes: NamedNodeMapLike = null;
+        attributes: NamedNodeMapLike = <any>null;
         childNodes = EMPTY_LIST;
 
 
-        constructor(data: string) {
+        constructor(data: string | null) {
             this.nodeName = "#text";
             this.nodeValue = data;
         }
@@ -211,33 +211,45 @@ module DomLite {
 
 
     export function createCssStyle(copy?: CSSStyleDeclaration): CSSStyleDeclaration {
-        var inst: CSSStyleDeclaration = <any>(copy != null ? Object.assign({}, copy) : {});
-
-        inst.getPropertyPriority = function getPropertyPriority(propertyName: string): string {
-            // TODO ignores priority
-            return "";
-        };
-
-        inst.getPropertyValue = function getPropertyValue(propertyName: string): string {
-            return inst[propertyName];
-        };
-
-        inst.item = function item(index: number): string {
-            // TODO efficient
-            var keys = Object.keys(inst);
-            return inst[keys[index]];
-        };
-
-        inst.removeProperty = function removeProperty(propertyName: string): string {
-            var oldVal = inst[propertyName];
-            delete inst[propertyName];
-            return oldVal;
-        };
-
-        inst.setProperty = function setProperty(propertyName: string, value: string | null, priority?: string): void {
-            // TODO ignores priority parameter
-            inst[propertyName] = value;
-        };
+        var inst: CSSStyleDeclaration = Object.create(copy != null ? Object.assign({}, copy) : {}, {
+            getPropertyPriority: {
+                value: function getPropertyPriority(propertyName: string): string {
+                    // TODO ignores priority
+                    return "";
+                }
+            },
+            getPropertyValue: {
+                value: function getPropertyValue(propertyName: string): string {
+                    return inst[propertyName];
+                }
+            },
+            item: {
+                value: function item(index: number): string {
+                    // TODO inefficient
+                    var keys = Object.keys(inst);
+                    return inst[keys[index]];
+                }
+            },
+            length: {
+                get: function get() {
+                    // TODO inefficient
+                    return Object.keys(inst).length;
+                }
+            },
+            removeProperty: {
+                value: function removeProperty(propertyName: string): string {
+                    var oldVal = inst[propertyName];
+                    delete inst[propertyName];
+                    return oldVal;
+                }
+            },
+            setProperty: {
+                value: function setProperty(propertyName: string, value: string | null, priority?: string): void {
+                    // TODO ignores priority parameter
+                    inst[propertyName] = value;
+                }
+            },
+        });
 
         return inst;
     }
@@ -251,48 +263,58 @@ module DomLite {
             }
         }
 
-        inst.getNamedItem = function getNamedItem(name: string): AttributeLike {
-            return inst.find((attr) => attr.name === name) || null;
-        };
-
-        inst.getNamedItemNS = function getNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike {
-            return inst.find((attr) => attr.name === localName) || null;
-        };
-
-        inst.item = function item(index: number): AttributeLike {
-            return inst[index] || null;
-        };
-
-        inst.removeNamedItem = function removeNamedItem(name: string): AttributeLike {
-            var idx = inst.findIndex((attr) => attr.name === name);
-            if (idx > -1) {
-                var attr = inst[idx];
-                inst.splice(idx, 1);
-                return attr;
-            }
-            return null;
-        };
-
-        inst.removeNamedItemNS = function removeNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike {
-            // TODO ignore namespace for now
-            return inst.removeNamedItem(localName);
-        };
-
-        inst.setNamedItem = function setNamedItem(arg: AttributeLike): AttributeLike {
-            var idx = inst.findIndex((attr) => attr.name === arg.name);
-            if (idx === -1) {
-                inst.push(arg);
-            }
-            else {
-                inst[idx] = arg;
-            }
-            return arg;
-        };
-
-        inst.setNamedItemNS = function setNamedItemNS(arg: AttributeLike): AttributeLike {
-            // TODO ignore namespace for now
-            return inst.setNamedItem(arg);
-        };
+        Object.defineProperties(inst, {
+            getNamedItem: {
+                value: function getNamedItem(name: string): AttributeLike | null {
+                    return inst.find((attr) => attr.name === name) || null;
+                }
+            },
+            getNamedItemNS: {
+                value: function getNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike | null {
+                    return inst.find((attr) => attr.name === localName) || null;
+                }
+            },
+            item: {
+                value: function item(index: number): AttributeLike | null {
+                    return inst[index] || null;
+                }
+            },
+            removeNamedItem: {
+                value: function removeNamedItem(name: string | null): AttributeLike | null {
+                    var idx = inst.findIndex((attr) => attr.name === name);
+                    if (idx > -1) {
+                        var attr = inst[idx];
+                        inst.splice(idx, 1);
+                        return attr;
+                    }
+                    return null;
+                }
+            },
+            removeNamedItemNS: {
+                value: function removeNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike | null {
+                    // TODO ignore namespace for now
+                    return inst.removeNamedItem(<string>localName);
+                }
+            },
+            setNamedItem: {
+                value: function setNamedItem(arg: AttributeLike): AttributeLike {
+                    var idx = inst.findIndex((attr) => attr.name === arg.name);
+                    if (idx === -1) {
+                        inst.push(arg);
+                    }
+                    else {
+                        inst[idx] = arg;
+                    }
+                    return arg;
+                }
+            },
+            setNamedItemNS: {
+                value: function setNamedItemNS(arg: AttributeLike): AttributeLike {
+                    // TODO ignore namespace for now
+                    return inst.setNamedItem(arg);
+                }
+            },
+        });
 
         return inst;
     }
@@ -307,9 +329,13 @@ module DomLite {
             }
         }
 
-        inst.item = function item(index: number): NodeLike {
-            return inst[index];
-        };
+        Object.defineProperties(inst, {
+            item: {
+                value: function item(index: number): NodeLike {
+                    return inst[index];
+                }
+            },
+        });
 
         return inst;
     }
@@ -321,61 +347,70 @@ module DomLite {
             Array.prototype.push.apply(inst, copy);
         }
 
-        inst.add = function add() {
-            for (var i = 0, size = arguments.length; i < size; i++) {
-                var argI = arguments[i];
-                // only add if not already contained in list
-                var idx = inst.indexOf(argI);
-                if (idx === -1) {
-                    inst.push(argI);
+        Object.defineProperties(inst, {
+            add: {
+                value: function add() {
+                    for (var i = 0, size = arguments.length; i < size; i++) {
+                        var argI = arguments[i];
+                        // only add if not already contained in list
+                        var idx = inst.indexOf(argI);
+                        if (idx === -1) {
+                            inst.push(argI);
+                        }
+                    }
                 }
-            }
-        };
-
-        inst.contains = function contains(token: string): boolean {
-            return inst.indexOf(token) > -1;
-        };
-
-        inst.item = function item(index: number): string {
-            return inst[index];
-        };
-
-        inst.remove = function remove(...token: string[]): void {
-            for (var i = 0, size = arguments.length; i < size; i++) {
-                var idx = inst.indexOf(arguments[i]);
-                if (idx > -1) {
-                    inst.splice(idx, 1);
-                    return; // only remove first instance
+            },
+            contains: {
+                value: function contains(token: string): boolean {
+                    return inst.indexOf(token) > -1;
                 }
-            }
-        };
-
-        inst.toString = function toString(): string {
-            return inst.toString();
-        };
-
-        inst.toggle = function toggle(token: string, force?: boolean): boolean {
-            if (force !== undefined) {
-                if (force) {
-                    inst.add(token);
-                    return true;
+            },
+            item: {
+                value: function item(index: number): string {
+                    return inst[index];
                 }
-                else {
-                    inst.remove(token);
-                    return false;
+            },
+            remove: {
+                value: function remove(...token: string[]): void {
+                    for (var i = 0, size = arguments.length; i < size; i++) {
+                        var idx = inst.indexOf(arguments[i]);
+                        if (idx > -1) {
+                            inst.splice(idx, 1);
+                            return; // only remove first instance
+                        }
+                    }
                 }
-            }
-            else {
-                if (inst.indexOf(token) > -1) {
-                    inst.remove(token);
-                    return false;
+            },
+            toString: {
+                value: function toString(): string {
+                    return inst.toString();
                 }
-                else {
-                    inst.push(token);
-                    return true;
+            },
+            toggle: {
+                value: function toggle(token: string, force?: boolean): boolean {
+                    if (force !== undefined) {
+                        if (force) {
+                            inst.add(token);
+                            return true;
+                        }
+                        else {
+                            inst.remove(token);
+                            return false;
+                        }
+                    }
+                    else {
+                        if (inst.indexOf(token) > -1) {
+                            inst.remove(token);
+                            return false;
+                        }
+                        else {
+                            inst.push(token);
+                            return true;
+                        }
+                    }
                 }
-            }
-        };
+            },
+        });
 
         return inst;
     }

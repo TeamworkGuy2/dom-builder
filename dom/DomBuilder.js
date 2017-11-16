@@ -32,20 +32,20 @@ var DomBuilder = (function () {
                 clsList.add(classNames[i]);
             }
         }
-        else if (classNames) {
+        else if (classNames != null) {
             clsList.add(classNames);
         }
         return this;
     };
     DomBuilder.prototype.id = function (id) {
-        if (id) {
+        if (id != null) {
             this.elem.id = id;
         }
         return this;
     };
     DomBuilder.prototype.styles = function (styles, skipNulls) {
         var elemStyle = this.elem.style;
-        if (styles) {
+        if (styles != null) {
             var keys = Object.keys(styles);
             for (var i = 0, size = keys.length; i < size; i++) {
                 var style = styles[keys[i]];
@@ -66,11 +66,10 @@ var DomBuilder = (function () {
         var elemAttrs = this.elem.attributes;
         if (attrs) {
             var attrsMap = attrs;
-            var keys = Object.keys(attrsMap);
-            for (var i = 0, size = keys.length; i < size; i++) {
-                var attrVal = attrsMap[keys[i]];
-                if (!skipNulls || attrVal != null) {
-                    var attr = this.dom.createAttribute(keys[i]);
+            for (var key in attrsMap) {
+                var attrVal = attrsMap[key];
+                if (Object.prototype.hasOwnProperty.call(attrsMap, key) && (!skipNulls || attrVal != null)) {
+                    var attr = this.dom.createAttribute(key);
                     attr.value = attrVal;
                     elemAttrs.setNamedItem(attr);
                 }
@@ -119,7 +118,6 @@ var DomBuilder = (function () {
         return this;
     };
     DomBuilder.prototype.textOrChild = function (textOrElem) {
-        var type = typeof textOrElem;
         if (textOrElem.nodeName) {
             this.addChild(textOrElem);
         }
