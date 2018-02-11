@@ -58,7 +58,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
             for (var i = 0, size = keys.length; i < size; i++) {
                 var style = styles[keys[i]];
                 if (!skipNulls || style != null) {
-                    (<CSSStyleDeclaration>elemStyle)[keys[i]] = style;
+                    (<CSSStyleDeclaration>elemStyle)[<number><any>keys[i]] = <string>style;
                 }
             }
         }
@@ -68,7 +68,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
     public style(name: string, value: string | number | boolean, skipNull?: boolean): this {
         if (!skipNull || value != null) {
-            (<CSSStyleDeclaration>this.elem.style)[name] = value ? String(value) : value;
+            (<CSSStyleDeclaration>this.elem.style)[<number><any>name] = <string>(value ? String(value) : value);
         }
         return this;
     }

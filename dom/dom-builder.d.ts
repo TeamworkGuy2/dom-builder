@@ -108,11 +108,11 @@ interface DomBuilderHelper {
  * @since 2016-04-27
  */
 interface DomValidate {
-    missingNode(nodeName: string);
+    missingNode(nodeName: string): void;
 
-    expectNode(node: Element, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number);
+    expectNode(node: Element, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): void;
 
-    unexpectedNode(badNodeName: string, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number);
+    unexpectedNode(badNodeName: string, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): void;
 }
 
 

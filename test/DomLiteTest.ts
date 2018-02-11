@@ -93,7 +93,7 @@ suite("DomLite", function domLite() {
         st.zIndex = "123";
         st.backgroundColor = "#999";
         asr.equal(st.length, 2);
-        asr.deepEqual(Object.keys(st).map((k) => st[k]), ["123", "#999"]);
+        asr.deepEqual(Object.keys(st).map((k) => st[<number><any>k]), ["123", "#999"]);
         asr.equal(st.zIndex, "123");
         asr.equal(st.item(1), "#999");
     });

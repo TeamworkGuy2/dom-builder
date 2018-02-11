@@ -58,7 +58,7 @@ var DomBuilder = (function () {
     };
     DomBuilder.prototype.style = function (name, value, skipNull) {
         if (!skipNull || value != null) {
-            this.elem.style[name] = value ? String(value) : value;
+            this.elem.style[name] = (value ? String(value) : value);
         }
         return this;
     };

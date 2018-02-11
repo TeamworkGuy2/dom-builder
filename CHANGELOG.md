@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.5.0](N/A) - 2017-11-16
+### [0.5.1](N/A) - 2018-02-11
+#### Changed
+* Update `package.json` dependencies - update chai, mocha, and node
+
+
+--------
+### [0.5.0](https://github.com/TeamworkGuy2/dom-builder/commit/496d057345a7d79e6f05919c2be0c91ceca53985) - 2017-11-16
 #### Changed
 * `package.json` added `strictNullChecks` and fixed code to handle nullable types
 * added/improved unit tests

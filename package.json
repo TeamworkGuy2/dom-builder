@@ -1,20 +1,20 @@
 {
   "name": "dom-builder",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "TypeScript DOM builder utils, static helpers for element attributes and childNodes, and a virtual DOM implementation.",
   "author": "TeamworkGuy2",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/chai": "~4.0.0",
-    "@types/mocha": "~2.2.0",
-    "@types/node": "~8.0.0",
+    "@types/chai": "~4.1.0",
+    "@types/mocha": "~2.2.48",
+    "@types/node": "~9.4.0",
     "chai": "~4.1.0",
-    "mocha": "~4.0.0",
+    "mocha": "~5.0.0",
     "typescript": "~2.4.0"
   },
   "scripts": {
-    "test": "mocha -u tdd"
+    "test": "mocha -u tdd --recursive",
+    "tsc": "./node_modules/typescript/bin/tsc"
   }
 }

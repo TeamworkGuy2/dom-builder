@@ -220,14 +220,14 @@ module DomLite {
             },
             getPropertyValue: {
                 value: function getPropertyValue(propertyName: string): string {
-                    return inst[propertyName];
+                    return inst[<number><any>propertyName];
                 }
             },
             item: {
                 value: function item(index: number): string {
                     // TODO inefficient
                     var keys = Object.keys(inst);
-                    return inst[keys[index]];
+                    return inst[<number><any>keys[index]];
                 }
             },
             length: {
@@ -238,15 +238,15 @@ module DomLite {
             },
             removeProperty: {
                 value: function removeProperty(propertyName: string): string {
-                    var oldVal = inst[propertyName];
-                    delete inst[propertyName];
+                    var oldVal = inst[<number><any>propertyName];
+                    delete inst[<number><any>propertyName];
                     return oldVal;
                 }
             },
             setProperty: {
                 value: function setProperty(propertyName: string, value: string | null, priority?: string): void {
                     // TODO ignores priority parameter
-                    inst[propertyName] = value;
+                    inst[<number><any>propertyName] = <string>value;
                 }
             },
         });
