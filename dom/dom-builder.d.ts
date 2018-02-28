@@ -83,6 +83,7 @@ interface DomBuilderHelper {
 
     removeNodeAttr(elem: HasAttributes, name: string): void;
 
+    getNodeAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string };
     getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T;
 
     // ==== .children ====

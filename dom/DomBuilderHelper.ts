@@ -118,7 +118,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
             var attrName = attrNames[i];
             var attr = attrs.getNamedItem(attrName);
             if (!skipNull || attr != null) {
-                res[attrName] = attr != null ? attr.value : null;
+                res[attrName] = attr != null ? <any>attr.value : <any>null;
             }
         }
         return res;

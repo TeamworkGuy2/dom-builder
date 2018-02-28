@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.5.1](N/A) - 2018-02-11
+### [0.5.2](N/A) - 2018-02-27
+#### Changed
+* Update to TypeScript 2.7
+
+
+--------
+### [0.5.1](https://github.com/TeamworkGuy2/dom-builder/commit/ef5d34eb0c31be8bb67329f58b53a28c02168e38) - 2018-02-11
 #### Changed
 * Update `package.json` dependencies - update chai, mocha, and node
 
