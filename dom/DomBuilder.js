@@ -6,7 +6,7 @@
  * @author TeamworkGuy2
  * @since 2016-04-26
  */
-var DomBuilder = (function () {
+var DomBuilder = /** @class */ (function () {
     function DomBuilder(elem, dom) {
         this.elem = elem;
         this.dom = dom;

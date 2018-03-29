@@ -2,7 +2,7 @@
 /** Helper functions for XMLDocument Node attributes and children
  * @since 2016-04-27
  */
-var DomBuilderHelper = (function () {
+var DomBuilderHelper = /** @class */ (function () {
     function DomBuilderHelper(dom, validator) {
         this._dom = dom;
         this._validator = validator;

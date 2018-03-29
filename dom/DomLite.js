@@ -14,7 +14,7 @@ var DomLite;
         return new AttrLike(qualifiedName, value, namespaceUri);
     }
     DomLite.createAttribute = createAttribute;
-    var AttrLike = (function () {
+    var AttrLike = /** @class */ (function () {
         function AttrLike(qualifiedName, value, namespaceUri) {
             this.name = qualifiedName;
             this.value = "" + value;
@@ -23,7 +23,7 @@ var DomLite;
         return AttrLike;
     }());
     DomLite.AttrLike = AttrLike;
-    var DocLike = (function () {
+    var DocLike = /** @class */ (function () {
         function DocLike(ns, rootNodeName) {
             this.doc = this.createElement(rootNodeName);
             if (ns != null) {
@@ -53,7 +53,7 @@ var DomLite;
         return DocLike;
     }());
     DomLite.DocLike = DocLike;
-    var ElemLike = (function () {
+    var ElemLike = /** @class */ (function () {
         function ElemLike(qualifiedName, namespaceUri) {
             this.nodeName = qualifiedName;
         }
@@ -129,7 +129,7 @@ var DomLite;
         return ElemLike;
     }());
     DomLite.ElemLike = ElemLike;
-    var TextNodeLike = (function () {
+    var TextNodeLike = /** @class */ (function () {
         function TextNodeLike(data) {
             this.attributes = null;
             this.childNodes = EMPTY_LIST;

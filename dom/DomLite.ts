@@ -123,7 +123,7 @@ module DomLite {
         }
 
 
-        public addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+        public addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void {
             // do nothing
         }
 
@@ -192,7 +192,7 @@ module DomLite {
         }
 
 
-        public addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+        public addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void {
             // do nothing
         }
 
@@ -309,7 +309,7 @@ module DomLite {
                 }
             },
             setNamedItemNS: {
-                value: function setNamedItemNS(arg: AttributeLike): AttributeLike {
+                value: function setNamedItemNS(arg: AttributeLike): AttributeLike | null {
                     // TODO ignore namespace for now
                     return inst.setNamedItem(arg);
                 }

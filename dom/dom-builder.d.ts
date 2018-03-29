@@ -142,6 +142,7 @@ interface DocumentLike {
 
 interface ElementLike extends NodeLike {
     id: string;
+    attributes: NamedNodeMapLike;
     classList?: DOMTokenList;
     style?: CSSStyleDeclaration;
 }
@@ -159,22 +160,21 @@ interface NamedNodeMapLike {
     removeNamedItem(name: string): AttributeLike | null;
     removeNamedItemNS(namespaceURI: string | null, localName: string | null): AttributeLike | null;
 
-    setNamedItem(arg: AttributeLike): AttributeLike;
-    setNamedItemNS(arg: AttributeLike): AttributeLike;
+    setNamedItem(arg: AttributeLike): AttributeLike | null;
+    setNamedItemNS(arg: AttributeLike): AttributeLike | null;
 }
 
 
 interface NodeLike {
     nodeName: string;
     nodeValue: string | null;
-    attributes: NamedNodeMapLike;
     readonly childNodes: NodeListLike;
     textContent: string | null;
 
     appendChild<T extends Node>(newChild: T): T;
     appendChild<T extends NodeLike>(newChild: T): T;
 
-    addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
 }
 
 

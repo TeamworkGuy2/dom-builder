@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.5.2](N/A) - 2018-02-27
+### [0.6.0](N/A) - 2018-03-29
+#### Changed
+* Update to TypeScript 2.8 and fixes for Element and Document to be assignable to ElementLike and DocumentLike
+
+
+--------
+### [0.5.2](https://github.com/TeamworkGuy2/dom-builder/commit/0ee1f9a03c3e8f7d98103193c4a1eb574c40ae86) - 2018-02-27
 #### Changed
 * Update to TypeScript 2.7
 

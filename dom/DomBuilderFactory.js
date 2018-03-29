@@ -9,7 +9,7 @@ var DomBuilder = require("./DomBuilder");
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
-var DomBuilderFactory = (function () {
+var DomBuilderFactory = /** @class */ (function () {
     function DomBuilderFactory(dom) {
         this.dom = dom;
     }
