@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.0](N/A) - 2018-03-29
+### [0.6.1](N/A) - 2018-03-31
+#### Changed
+* Update tsconfig.json with `noImplicitReturns: true` and `forceConsistentCasingInFileNames: true`
+
+
+--------
+### [0.6.0](https://github.com/TeamworkGuy2/dom-builder/commit/37fc735038e69b9562d2d3e9766e521d87dee4f7) - 2018-03-29
 #### Changed
 * Update to TypeScript 2.8 and fixes for Element and Document to be assignable to ElementLike and DocumentLike
 
