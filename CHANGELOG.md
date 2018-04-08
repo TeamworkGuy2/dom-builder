@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.1](N/A) - 2018-03-31
+### [0.6.2](N/A) - 2018-04-08
+#### Changed
+* Added tarball and package.json npm script `build-package` reference for creating tarball
+
+
+--------
+### [0.6.1](https://github.com/TeamworkGuy2/dom-builder/commit/91ce390d6022843b95f1f817c3a2ab51d51084e3) - 2018-03-31
 #### Changed
 * Update tsconfig.json with `noImplicitReturns: true` and `forceConsistentCasingInFileNames: true`
 
