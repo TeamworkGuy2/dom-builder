@@ -108,7 +108,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     /** get multiple attributes from a Node and return them as an object */
     public getNodeAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string };
-    public getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T {
+    public getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T & string)[], skipNull?: boolean): T {
         var res = <T>{};
         if (elem == null) {
             return res;

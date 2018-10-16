@@ -55,6 +55,11 @@ var DomLite;
     DomLite.DocLike = DocLike;
     var ElemLike = /** @class */ (function () {
         function ElemLike(qualifiedName, namespaceUri) {
+            this.id = "";
+            this.nodeValue = null;
+            this.textContent = null;
+            this._attributes = null;
+            this._childNodes = null;
             this.nodeName = qualifiedName;
         }
         Object.defineProperty(ElemLike.prototype, "attributes", {
@@ -131,6 +136,7 @@ var DomLite;
     DomLite.ElemLike = ElemLike;
     var TextNodeLike = /** @class */ (function () {
         function TextNodeLike(data) {
+            this.textContent = null;
             this.attributes = null;
             this.childNodes = EMPTY_LIST;
             this.nodeName = "#text";

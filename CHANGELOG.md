@@ -4,7 +4,16 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.2](N/A) - 2018-04-08
+### [0.6.3](N/A) - 2018-10-16
+#### Changed
+* Update to TypeScript 3.1
+* Update dev dependencies and @types
+* Enable `tsconfig.json` `strict` and fix compile errors
+* Removed compiled bin tarball in favor of git tags
+
+
+--------
+### [0.6.2](https://github.com/TeamworkGuy2/dom-builder/commit/d34a61c4ba58e831c134b04b065a9507a73156a9) - 2018-04-08
 #### Changed
 * Added tarball and package.json npm script `build-package` reference for creating tarball
 

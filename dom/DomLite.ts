@@ -84,12 +84,12 @@ module DomLite {
 
 
     export class ElemLike implements ElementLike {
-        id: string;
+        id: string = "";
         nodeName: string;
-        nodeValue: string | null;
-        textContent: string | null;
-        _attributes: (NamedNodeMapLike & AttributeLike[]) | null;
-        _childNodes: (NodeListLike & NodeLike[]) | null;
+        nodeValue: string | null = null;
+        textContent: string | null = null;
+        _attributes: (NamedNodeMapLike & AttributeLike[]) | null = null;
+        _childNodes: (NodeListLike & NodeLike[]) | null = null;
         _classList?: (DOMTokenList & string[]) | null;
         _style?: CSSStyleDeclaration | null;
 
@@ -176,7 +176,7 @@ module DomLite {
     export class TextNodeLike implements NodeLike {
         nodeName: string;
         nodeValue: string | null;
-        textContent: string | null;
+        textContent: string | null = null;
         attributes: NamedNodeMapLike = <any>null;
         childNodes = EMPTY_LIST;
 
