@@ -1,17 +1,21 @@
 {
   "name": "dom-builder",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "TypeScript DOM builder utils, static helpers for element attributes and childNodes, and a virtual DOM implementation.",
   "author": "TeamworkGuy2",
   "homepage": "https://github.com/TeamworkGuy2/dom-builder",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamworkGuy2/dom-builder.git"
+  },
   "dependencies": {},
   "devDependencies": {
-    "@types/chai": "~4.1.6",
+    "@types/chai": "~4.1.7",
     "@types/mocha": "~5.2.5",
     "chai": "~4.2.0",
     "mocha": "~5.2.0",
-    "typescript": "~3.1.3"
+    "typescript": "~3.2.2"
   },
   "scripts": {
     "test": "mocha -u tdd --recursive",

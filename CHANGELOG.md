@@ -4,7 +4,14 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.3](N/A) - 2018-10-16
+### [0.6.4](N/A) - 2018-12-29
+#### Changed
+* Update to TypeScript 3.2 and fix compile errors
+* Update @types dependencies
+
+
+--------
+### [0.6.3](https://github.com/TeamworkGuy2/dom-builder/commit/0ed836c7bf54d8989d3165f9f744c0513bf6b786) - 2018-10-16
 #### Changed
 * Update to TypeScript 3.1
 * Update dev dependencies and @types
