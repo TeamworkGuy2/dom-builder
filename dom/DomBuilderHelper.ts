@@ -60,7 +60,8 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMapLike, name: string, parser: (str: string) => T, val: string | null | undefined): T | null {
         if (val != null) {
-            var attr: AttributeLike | null = this._dom.createAttribute(name);
+            var nsIdx = name.indexOf(":");
+            var attr: AttributeLike | null = (nsIdx > -1 ? this._dom.createAttributeNS(name.substr(0, nsIdx), name) : this._dom.createAttribute(name));
             attr.value = val;
             attrs.setNamedItem(attr);
             return <any>val;

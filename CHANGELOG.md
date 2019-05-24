@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.4](N/A) - 2018-12-29
+### [0.6.5](N/A) - 2019-05-24
+#### Fixed
+* Fix attribute creation to use createAttributeNS() for attribute names containing a namespace prefix followed by `:`
+
+
+--------
+### [0.6.4](https://github.com/TeamworkGuy2/dom-builder/commit/55910566c332d22711d2d524c87d49c12c8d2eb2) - 2018-12-29
 #### Changed
 * Update to TypeScript 3.2 and fix compile errors
 * Update @types dependencies

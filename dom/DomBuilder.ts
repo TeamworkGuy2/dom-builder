@@ -117,7 +117,8 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     private _attr(name: string, value: string | null, skipNull?: boolean): this {
         var elemAttrs = <NamedNodeMapLike>this.elem.attributes;
         if (!skipNull || value != null) {
-            var attr = this.dom.createAttribute(name);
+            var nsIdx = name.indexOf(":");
+            var attr = (nsIdx > -1 ? this.dom.createAttributeNS(name.substr(0, nsIdx), name) : this.dom.createAttribute(name));
             attr.value = <string>value;
             elemAttrs.setNamedItem(attr);
         }

@@ -130,7 +130,7 @@ interface HasAttributes {
 
 interface DocumentLike {
     createAttribute(name: string): AttributeLike;
-    createAttributeNS(namespaceURI: string | null, qualifiedName: string): { readonly name: string; value: string };
+    createAttributeNS(namespaceURI: string | null, qualifiedName: string): AttributeLike;
 
     createElement(tagName: string): ElementLike;
 

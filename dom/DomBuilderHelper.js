@@ -36,7 +36,8 @@ var DomBuilderHelper = /** @class */ (function () {
     };
     DomBuilderHelper.prototype._attrGetOrSet = function (attrs, name, parser, val) {
         if (val != null) {
-            var attr = this._dom.createAttribute(name);
+            var nsIdx = name.indexOf(":");
+            var attr = (nsIdx > -1 ? this._dom.createAttributeNS(name.substr(0, nsIdx), name) : this._dom.createAttribute(name));
             attr.value = val;
             attrs.setNamedItem(attr);
             return val;

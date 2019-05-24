@@ -95,7 +95,8 @@ var DomBuilder = /** @class */ (function () {
     DomBuilder.prototype._attr = function (name, value, skipNull) {
         var elemAttrs = this.elem.attributes;
         if (!skipNull || value != null) {
-            var attr = this.dom.createAttribute(name);
+            var nsIdx = name.indexOf(":");
+            var attr = (nsIdx > -1 ? this.dom.createAttributeNS(name.substr(0, nsIdx), name) : this.dom.createAttribute(name));
             attr.value = value;
             elemAttrs.setNamedItem(attr);
         }
