@@ -5,6 +5,15 @@ var DomLite = require("../dom/DomLite");
 var asr = chai.assert;
 suite("DomLite", function domLite() {
     var newAttr = DomLite.createAttribute;
+    test("checkTypes", function checkTypesTest() {
+        var doc = null; // document
+        var docm = doc;
+        var node = doc && doc.body;
+        var elem = doc && doc.body;
+        var attrs = doc && doc.body && doc.body.attributes;
+        var attr = doc && doc.body && doc.createAttribute("");
+        var nodeList = doc && doc.childNodes;
+    });
     test("textNode", function textNodeTest() {
         var txt = DomLite.createTextNode("abc");
         asr.equal(txt.nodeValue, "abc");
@@ -102,8 +111,9 @@ suite("DomLite", function domLite() {
         attrs.setNamedItem(attr2);
         var el = DomLite.createElement("div");
         el.attributes.setNamedItem(attr1);
-        el.attributes.setNamedItem(attr2);
+        el.setAttribute(attr2.name, attr2.value);
         asr.deepEqual(Object.keys(el.attributes), ["0", "1"]);
+        asr.deepEqual(el.attributes.map(function (a) { return a.value; }), ["123", "abc"]);
     });
     test("document-like", function documentLikeTest() {
         var doc = new DomLite.DocLike("zzz://some.url/a/path/", "sheet");

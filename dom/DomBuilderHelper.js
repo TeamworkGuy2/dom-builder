@@ -20,29 +20,26 @@ var DomBuilderHelper = /** @class */ (function () {
         return DomBuilderHelper._serializer;
     };
     // ==== Element.attributes utils ====
-    DomBuilderHelper.prototype.attrInt = function (attrs, name, val) {
-        return this._attrGetOrSet(attrs, name, parseInt, val !== undefined ? String(val) : undefined);
+    DomBuilderHelper.prototype.attrInt = function (elem, name, val) {
+        return this._attrGetOrSet(elem, name, parseInt, val !== undefined ? String(val) : undefined);
     };
-    DomBuilderHelper.prototype.attrFloat = function (attrs, name, val) {
-        return this._attrGetOrSet(attrs, name, parseFloat, val !== undefined ? String(val) : undefined);
+    DomBuilderHelper.prototype.attrFloat = function (elem, name, val) {
+        return this._attrGetOrSet(elem, name, parseFloat, val !== undefined ? String(val) : undefined);
     };
-    DomBuilderHelper.prototype.attrBool = function (attrs, name, val, skipSetFalse) {
+    DomBuilderHelper.prototype.attrBool = function (elem, name, val, skipSetFalse) {
         if (skipSetFalse === void 0) { skipSetFalse = true; }
-        return this._attrGetOrSet(attrs, name, function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); }, val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
+        return this._attrGetOrSet(elem, name, function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); }, val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
     };
-    DomBuilderHelper.prototype.attrString = function (attrs, name, val, skipSetEmpty) {
+    DomBuilderHelper.prototype.attrString = function (elem, name, val, skipSetEmpty) {
         if (skipSetEmpty === void 0) { skipSetEmpty = true; }
-        return this._attrGetOrSet(attrs, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
+        return this._attrGetOrSet(elem, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
     };
-    DomBuilderHelper.prototype._attrGetOrSet = function (attrs, name, parser, val) {
+    DomBuilderHelper.prototype._attrGetOrSet = function (elem, name, parser, val) {
         if (val != null) {
-            var nsIdx = name.indexOf(":");
-            var attr = (nsIdx > -1 ? this._dom.createAttributeNS(name.substr(0, nsIdx), name) : this._dom.createAttribute(name));
-            attr.value = val;
-            attrs.setNamedItem(attr);
+            elem.setAttribute(name, val);
             return val;
         }
-        var attr = attrs.getNamedItem(name);
+        var attr = elem.attributes.getNamedItem(name);
         return attr ? parser(attr.value) : null;
     };
     // ==== Get attributes from Node ====

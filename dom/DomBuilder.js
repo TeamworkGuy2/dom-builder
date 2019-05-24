@@ -63,15 +63,13 @@ var DomBuilder = /** @class */ (function () {
         return this;
     };
     DomBuilder.prototype.attrs = function (attrs, skipNulls) {
-        var elemAttrs = this.elem.attributes;
+        var elem = this.elem;
         if (attrs) {
             var attrsMap = attrs;
             for (var key in attrsMap) {
                 var attrVal = attrsMap[key];
                 if (Object.prototype.hasOwnProperty.call(attrsMap, key) && (!skipNulls || attrVal != null)) {
-                    var attr = this.dom.createAttribute(key);
-                    attr.value = attrVal;
-                    elemAttrs.setNamedItem(attr);
+                    elem.setAttribute(key, attrVal);
                 }
             }
         }
@@ -93,12 +91,8 @@ var DomBuilder = /** @class */ (function () {
         return this._attr(name, skipEmptyOrNull && (value == null || value.length === 0) ? null : value, skipEmptyOrNull);
     };
     DomBuilder.prototype._attr = function (name, value, skipNull) {
-        var elemAttrs = this.elem.attributes;
         if (!skipNull || value != null) {
-            var nsIdx = name.indexOf(":");
-            var attr = (nsIdx > -1 ? this.dom.createAttributeNS(name.substr(0, nsIdx), name) : this.dom.createAttribute(name));
-            attr.value = value;
-            elemAttrs.setNamedItem(attr);
+            this.elem.setAttribute(name, value);
         }
         return this;
     };

@@ -128,6 +128,16 @@ module DomLite {
         }
 
 
+        public setAttribute(name: string, value: any): void {
+            this.attributes.setNamedItem({ name, value });
+        }
+
+
+        public setAttributeNS(namespaceURI: string | null, qualifiedName: string, value: any): void {
+            this.attributes.setNamedItem({ name: qualifiedName, value });
+        }
+
+
         public toString(indent?: string, currentIndent?: string | null) {
             var str = (currentIndent || "") + "<" + this.nodeName;
             var attrs: string[] | null = (this._attributes != null ? [] : null);

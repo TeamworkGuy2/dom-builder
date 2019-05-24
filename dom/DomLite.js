@@ -98,6 +98,12 @@ var DomLite;
         ElemLike.prototype.addEventListener = function (type, listener, options) {
             // do nothing
         };
+        ElemLike.prototype.setAttribute = function (name, value) {
+            this.attributes.setNamedItem({ name: name, value: value });
+        };
+        ElemLike.prototype.setAttributeNS = function (namespaceURI, qualifiedName, value) {
+            this.attributes.setNamedItem({ name: qualifiedName, value: value });
+        };
         ElemLike.prototype.toString = function (indent, currentIndent) {
             var str = (currentIndent || "") + "<" + this.nodeName;
             var attrs = (this._attributes != null ? [] : null);

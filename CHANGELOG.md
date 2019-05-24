@@ -4,7 +4,16 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.6.5](N/A) - 2019-05-24
+### [0.7.0](N/A) - 2019-05-24
+#### Added
+* ElementLike `setAttribute()` and `setAttributeNS()`
+
+#### Changed
+* DomBuilderHelper `attr*()` functions first parameter changed from `attrs: NamedNodeMap` to `elem: ElementLike` to allow setAttribute() to be used instead of setNamedItem() (setNamedItem() does not preserve the namespace prefix in some DOM implementations)
+
+
+--------
+### [0.6.5](https://github.com/TeamworkGuy2/dom-builder/commit/fbb4c44b7195fddd89274e23eba2e6fd9e1248ce) - 2019-05-24
 #### Fixed
 * Fix attribute creation to use createAttributeNS() for attribute names containing a namespace prefix followed by `:`
 

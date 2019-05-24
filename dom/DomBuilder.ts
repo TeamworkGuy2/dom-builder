@@ -77,16 +77,14 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     public attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): this;
     public attrs<U extends object>(attrs: U, skipNulls?: boolean): this;
     public attrs(attrs: any, skipNulls?: boolean): this {
-        var elemAttrs = <NamedNodeMapLike>this.elem.attributes;
+        var elem = this.elem;
 
         if (attrs) {
             var attrsMap = <{ [name: string]: string | number | boolean }>attrs;
             for (var key in attrsMap) {
                 var attrVal = attrsMap[key];
                 if (Object.prototype.hasOwnProperty.call(attrsMap, key) && (!skipNulls || attrVal != null)) {
-                    var attr = this.dom.createAttribute(key);
-                    attr.value = <string><any>attrVal;
-                    elemAttrs.setNamedItem(attr);
+                    elem.setAttribute(key, attrVal);
                 }
             }
         }
@@ -115,12 +113,8 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
     private _attr(name: string, value: string | null, skipNull?: boolean): this {
-        var elemAttrs = <NamedNodeMapLike>this.elem.attributes;
         if (!skipNull || value != null) {
-            var nsIdx = name.indexOf(":");
-            var attr = (nsIdx > -1 ? this.dom.createAttributeNS(name.substr(0, nsIdx), name) : this.dom.createAttribute(name));
-            attr.value = <string>value;
-            elemAttrs.setNamedItem(attr);
+            this.elem.setAttribute(name, value);
         }
         return this;
     }

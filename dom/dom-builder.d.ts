@@ -64,13 +64,13 @@ interface DomBuilderHelper {
     getSerializer(): XMLSerializer;
 
     // ==== Element.attributes utils ====
-    attrInt(attrs: NamedNodeMapLike, name: string, val?: number): number | null;
+    attrInt(elem: ElementLike, name: string, val?: number): number | null;
 
-    attrFloat(attrs: NamedNodeMapLike, name: string, val?: number): number | null;
+    attrFloat(elem: ElementLike, name: string, val?: number): number | null;
 
-    attrBool(attrs: NamedNodeMapLike, name: string, val?: boolean): boolean | null;
+    attrBool(elem: ElementLike, name: string, val?: boolean): boolean | null;
 
-    attrString(attrs: NamedNodeMapLike, name: string, val?: string): string | null;
+    attrString(elem: ElementLike, name: string, val?: string): string | null;
 
     // ==== Get attributes from Node ====
     getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number | null;
@@ -145,6 +145,9 @@ interface ElementLike extends NodeLike {
     attributes: NamedNodeMapLike;
     classList?: DOMTokenList;
     style?: CSSStyleDeclaration;
+
+    setAttribute(name: string, value: any): void;
+    setAttributeNS(namespaceURI: string | null, qualifiedName: string, value: any): void;
 }
 
 

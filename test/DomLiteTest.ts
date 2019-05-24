@@ -6,6 +6,18 @@ var asr = chai.assert;
 suite("DomLite", function domLite() {
     var newAttr = DomLite.createAttribute;
 
+
+    test("checkTypes", function checkTypesTest() {
+        var doc: Document = <any>null; // document
+        var docm: DocumentLike = doc;
+        var node: NodeLike = doc && doc.body;
+        var elem: ElementLike = doc && doc.body;
+        var attrs: NamedNodeMapLike = doc && doc.body && doc.body.attributes;
+        var attr: AttributeLike = doc && doc.body && doc.createAttribute("");
+        var nodeList: NodeListLike = doc && doc.childNodes;
+    });
+
+
     test("textNode", function textNodeTest() {
         var txt = DomLite.createTextNode("abc");
         asr.equal(txt.nodeValue, "abc");
@@ -126,8 +138,9 @@ suite("DomLite", function domLite() {
 
         var el = DomLite.createElement("div");
         el.attributes.setNamedItem(attr1);
-        el.attributes.setNamedItem(attr2);
+        el.setAttribute(attr2.name, attr2.value);
         asr.deepEqual(Object.keys(el.attributes), ["0", "1"]);
+        asr.deepEqual(el.attributes.map((a) => a.value), ["123", "abc"]);
     });
 
 

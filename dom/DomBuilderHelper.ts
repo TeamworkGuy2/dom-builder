@@ -38,35 +38,32 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== Element.attributes utils ====
 
-    public attrInt(attrs: NamedNodeMap, name: string, val?: number): number | null {
-        return this._attrGetOrSet(attrs, name, parseInt, val !== undefined ? String(val) : undefined);
+    public attrInt(elem: ElementLike, name: string, val?: number): number | null {
+        return this._attrGetOrSet(elem, name, parseInt, val !== undefined ? String(val) : undefined);
     }
 
 
-    public attrFloat(attrs: NamedNodeMap, name: string, val?: number): number | null {
-        return this._attrGetOrSet(attrs, name, parseFloat, val !== undefined ? String(val) : undefined);
+    public attrFloat(elem: ElementLike, name: string, val?: number): number | null {
+        return this._attrGetOrSet(elem, name, parseFloat, val !== undefined ? String(val) : undefined);
     }
 
 
-    public attrBool(attrs: NamedNodeMap, name: string, val?: boolean, skipSetFalse: boolean = true): boolean | null {
-        return this._attrGetOrSet(attrs, name, (str) => str === "1" ? true : (str === "0" ? false : Boolean(str)), val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
+    public attrBool(elem: ElementLike, name: string, val?: boolean, skipSetFalse: boolean = true): boolean | null {
+        return this._attrGetOrSet(elem, name, (str) => str === "1" ? true : (str === "0" ? false : Boolean(str)), val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
     }
 
 
-    public attrString(attrs: NamedNodeMap, name: string, val?: string, skipSetEmpty: boolean = true): string | null {
-        return this._attrGetOrSet(attrs, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
+    public attrString(elem: ElementLike, name: string, val?: string, skipSetEmpty: boolean = true): string | null {
+        return this._attrGetOrSet(elem, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
     }
 
 
-    private _attrGetOrSet<T extends string | number | boolean>(attrs: NamedNodeMapLike, name: string, parser: (str: string) => T, val: string | null | undefined): T | null {
+    private _attrGetOrSet<T extends string | number | boolean>(elem: ElementLike, name: string, parser: (str: string) => T, val: string | null | undefined): T | null {
         if (val != null) {
-            var nsIdx = name.indexOf(":");
-            var attr: AttributeLike | null = (nsIdx > -1 ? this._dom.createAttributeNS(name.substr(0, nsIdx), name) : this._dom.createAttribute(name));
-            attr.value = val;
-            attrs.setNamedItem(attr);
+            elem.setAttribute(name, val);
             return <any>val;
         }
-        var attr = attrs.getNamedItem(name);
+        var attr = elem.attributes.getNamedItem(name);
         return attr ? parser(attr.value) : null;
     }
 
