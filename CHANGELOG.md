@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.7.0](N/A) - 2019-05-24
+### [0.7.1](N/A) - 2019-07-05
+#### Changed
+* Update to TypeScript 3.5 and fixed missing lib.dom.d.ts NodeSelector type
+
+
+--------
+### [0.7.0](https://github.com/TeamworkGuy2/dom-builder/commit/9650a03b3bfdfdeb844bf39a185bdcf8056fff00) - 2019-05-24
 #### Added
 * ElementLike `setAttribute()` and `setAttributeNS()`
 

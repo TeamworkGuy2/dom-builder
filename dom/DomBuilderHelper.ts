@@ -125,14 +125,14 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== .children ====
 
-    public queryOneChild<T extends Element>(parent: NodeSelector | T, selectors: string): T {
+    public queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T {
         // TODO only the newest browsers support this
         var res = (<T>parent.querySelector(":scope > " + selectors));
         return res;
     }
 
 
-    public queryOneAndGetChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
+    public queryOneAndGetChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
         var res = (<HTMLElement>parent.querySelector(selectors));
         if (!res) { throw this._validator.missingNode(selectors); }
         var resAry = Array.prototype.slice.call(res.children);
@@ -140,14 +140,14 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    public queryAll<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
+    public queryAll<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
         var res = parent.querySelectorAll(selectors);
         var resAry = Array.prototype.slice.call(res);
         return resAry;
     }
 
 
-    public queryAllChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[] {
+    public queryAllChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
         // TODO only the newest browsers support this
         return this.queryAll<T>(parent, ":scope > " + selectors);
     }

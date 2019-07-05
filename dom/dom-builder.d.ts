@@ -87,13 +87,13 @@ interface DomBuilderHelper {
     getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T;
 
     // ==== .children ====
-    queryOneChild<T extends Element>(parent: NodeSelector | T, selectors: string): T;
+    queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T;
 
-    queryOneAndGetChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[];
+    queryOneAndGetChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
-    queryAll<T extends Element>(parent: NodeSelector | T, selectors: string): T[];
+    queryAll<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
-    queryAllChilds<T extends Element>(parent: NodeSelector | T, selectors: string): T[];
+    queryAllChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
     getChilds<T extends NodeLike>(elem: T): T[];
 
@@ -187,6 +187,9 @@ interface NodeListLike {
 
     item(index: number): NodeLike;
 }
+
+
+type NodeSelectorLike = Pick<ParentNode, "querySelector" | "querySelectorAll">;
 
 
 declare module "dom-builder" {
