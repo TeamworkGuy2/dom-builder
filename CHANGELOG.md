@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.7.1](N/A) - 2019-07-05
+### [0.7.2](N/A) - 2019-11-08
+#### Changed
+* Update to TypeScript 3.7
+
+
+--------
+### [0.7.1](https://github.com/TeamworkGuy2/dom-builder/commit/f0e6dda3ebbdb97d925588ec5ffa89d0af96c1a9) - 2019-07-05
 #### Changed
 * Update to TypeScript 3.5 and fixed missing lib.dom.d.ts NodeSelector type
 
