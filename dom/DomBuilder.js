@@ -15,14 +15,14 @@ var DomBuilder = /** @class */ (function () {
         get: function () {
             return this.elem;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(DomBuilder.prototype, "document", {
         get: function () {
             return this.dom;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     DomBuilder.prototype.classes = function (classNames) {

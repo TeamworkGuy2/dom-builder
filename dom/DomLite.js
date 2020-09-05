@@ -66,28 +66,28 @@ var DomLite;
             get: function () {
                 return this._attributes || (this._attributes = createNamedNodeMap());
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ElemLike.prototype, "childNodes", {
             get: function () {
                 return this._childNodes || (this._childNodes = createNodeList());
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ElemLike.prototype, "classList", {
             get: function () {
                 return this._classList || (this._classList = createDomTokenList());
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ElemLike.prototype, "style", {
             get: function () {
                 return this._style || (this._style = createCssStyle());
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ElemLike.prototype.appendChild = function (newChild) {
