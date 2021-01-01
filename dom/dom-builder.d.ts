@@ -12,22 +12,22 @@ interface DomBuilder<T extends ElementLike> {
 
     id(id: string): DomBuilder<T>;
 
-    styles(styles: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T>;
+    styles(styles: { [name: string]: string | number | boolean | null | undefined }, skipNulls?: boolean): DomBuilder<T>;
 
-    style(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T>;
+    style(name: string, value: string | number | boolean | null | undefined, skipNull?: boolean): DomBuilder<T>;
 
-    attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): DomBuilder<T>;
+    attrs(attrs: { [name: string]: string | number | boolean | null | undefined }, skipNulls?: boolean): DomBuilder<T>;
     attrs<U extends object>(attrs: U, skipNulls?: boolean): DomBuilder<T>;
 
-    attr(name: string, value: string | number | boolean, skipNull?: boolean): DomBuilder<T>;
+    attr(name: string, value: string | number | boolean | null | undefined, skipNull?: boolean): DomBuilder<T>;
 
-    attrBool(name: string, value: boolean, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): DomBuilder<T>;
+    attrBool(name: string, value: boolean | null | undefined, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): DomBuilder<T>;
 
-    attrInt(name: string, value: number, skipNull?: boolean): DomBuilder<T>;
+    attrInt(name: string, value: number | null | undefined, skipNull?: boolean): DomBuilder<T>;
 
-    attrFloat(name: string, value: number, skipNull?: boolean): DomBuilder<T>;
+    attrFloat(name: string, value: number | null | undefined, skipNull?: boolean): DomBuilder<T>;
 
-    attrString(name: string, value: string, skipEmptyOrNull?: boolean): DomBuilder<T>;
+    attrString(name: string, value: string | null | undefined, skipEmptyOrNull?: boolean): DomBuilder<T>;
 
     text(textContent: string | number | boolean): DomBuilder<T>;
 
@@ -59,48 +59,94 @@ interface DomBuilderFactory {
  */
 interface DomBuilderHelper {
 
+    /** Returns a singleton created by calling the global 'DOMParser' constructor */
     getParser(): DOMParser;
 
+    /** Returns a singleton created by calling the global 'XMLSerializer' constructor */
     getSerializer(): XMLSerializer;
 
     // ==== Element.attributes utils ====
-    attrInt(elem: ElementLike, name: string, val?: number): number | null;
+    attrInt(elem: ElementLike, name: string, val?: number, throwIfMissing?: boolean): number | null;
 
-    attrFloat(elem: ElementLike, name: string, val?: number): number | null;
+    attrFloat(elem: ElementLike, name: string, val?: number, throwIfMissing?: boolean): number | null;
 
-    attrBool(elem: ElementLike, name: string, val?: boolean): boolean | null;
+    attrBool(elem: ElementLike, name: string, val?: boolean, skipSetFalse?: boolean, throwIfMissing?: boolean): boolean | null;
 
-    attrString(elem: ElementLike, name: string, val?: string): string | null;
+    attrString(elem: ElementLike, name: string, val?: string, skipSetEmpty?: boolean, throwIfMissing?: boolean): string | null;
 
     // ==== Get attributes from Node ====
-    getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number | null;
+    getAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number, throwIfMissing?: boolean): number | null;
 
-    getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number | null;
+    getAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number, throwIfMissing?: boolean): number | null;
 
-    getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean | null;
+    getAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean, throwIfMissing?: boolean): boolean | null;
 
-    getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string | null;
+    getAttrString(elem: HasAttributes, attrName: string, defaultValue?: string, throwIfMissing?: boolean): string | null;
 
-    removeNodeAttr(elem: HasAttributes, name: string): void;
+    removeAttr(elem: HasAttributes, name: string): void;
 
-    getNodeAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string };
-    getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T)[], skipNull?: boolean): T;
+    /** Reads the 'attrNames' attributes from 'elem' and returns an map of those attribute names to their values.
+     * @param elem an object with an 'attributes' property with a 'getNamedItem()' function to read the attributes from
+     * @param attrNames the attribute names to retrieve
+     * @param skipNull optional, flag to skip null attributes in the returned map
+     * @returns map of attribute names to their values
+     */
+    getAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string | null };
 
     // ==== .children ====
+    /** Call 'querySelector()' to retrieve one immediate child element matching the selector.
+     * @param parent the parent element
+     * @param selectors the CSS/querySelector() selector
+     * @param throwIfNone optional (default: true), throw an error if no matching child element is found
+     * @returns one element matching the query selector, null if 'throwIfNone' is false else throws an error when no match is found
+     */
     queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T;
+    queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string, throwIfNone: true): T;
+    queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string, throwIfNone?: boolean): T | null;
 
+    /** Call 'querySelector()' to retrive one child element matching the selector.
+     * @param parent the parent element
+     * @param selectors the CSS/querySelector() selector
+     * @returns one the 'children' of the first element matched by the query selector, else throws an error if no match is found
+     */
     queryOneAndGetChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
-    queryAll<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
-
+    /** Call 'querySelectorAll()' to retrive immediate child elements matching the selector.
+     * @param parent the parent element
+     * @param selectors the CSS/querySelectorAll() selector
+     * @return immediate matching elements of the 'parent'
+     */
     queryAllChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
-    getChilds<T extends NodeLike>(elem: T): T[];
+    /** Call 'querySelectorAll()' to retrive any child elements matching the selector.
+     * @param parent the parent element
+     * @param selectors the CSS/querySelectorAll() selector
+     * @return matching elements
+     */
+    queryAll<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[];
 
-    removeChilds(elem: Element): void;
+    /** Get the 'childNodes' from an element and copy them to an array
+     * @param elem the element from which to retrieve 'childNodes'
+     * @returns array of child nodes
+     */
+    getChildNodes<T extends NodeLike>(elem: T): T[];
 
-    addChilds(parent: ElementLike, childs: ElementLike[] | ArrayLike<ElementLike>): void;
+    /** Get the 'children' from an element and copy them to an array
+     * @param elem the element from which to retrieve 'children'
+     * @returns array of children
+     */
+    getChildren<T extends { children: HTMLCollectionBase }>(elem: T): Element[];
 
+    /** Remove all of the children from a node by looping over 'lastChild' and calling 'removeChild()'
+     * @param elem the element to remove children from
+     */
+    removeChilds(elem: Node): void;
+
+    /** Add children to an element
+     * @param parent the parent element to add the children to
+     * @param childs the child elements to add
+     */
+    addChilds(parent: NodeLike, childs: NodeLike[] | ArrayLike<NodeLike>): void;
 }
 
 
@@ -109,11 +155,13 @@ interface DomBuilderHelper {
  * @since 2016-04-27
  */
 interface DomValidate {
-    missingNode(nodeName: string): void;
+    missingNode(nodeName: string, parent?: any | null): Error;
+
+    missingAttribute(attributeName: string, parent?: any | null): Error;
 
     expectNode(node: Element, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): void;
 
-    unexpectedNode(badNodeName: string, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): void;
+    unexpectedNode(badNodeName: string, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): Error;
 }
 
 
@@ -176,6 +224,9 @@ interface NodeLike {
 
     appendChild<T extends Node>(newChild: T): T;
     appendChild<T extends NodeLike>(newChild: T): T;
+
+    removeChild<T extends Node>(oldChild: T): T;
+    removeChild<T extends NodeLike>(oldChild: T): T;
 
     addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
 }

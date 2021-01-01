@@ -8,28 +8,17 @@
  */
 var DomBuilder = /** @class */ (function () {
     function DomBuilder(elem, dom) {
-        this.elem = elem;
+        this.element = elem;
         this.dom = dom;
     }
-    Object.defineProperty(DomBuilder.prototype, "element", {
-        get: function () {
-            return this.elem;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DomBuilder.prototype, "document", {
-        get: function () {
-            return this.dom;
-        },
-        enumerable: false,
-        configurable: true
-    });
     DomBuilder.prototype.classes = function (classNames) {
-        var clsList = this.elem.classList;
+        var clsList = this.element.classList;
         if (Array.isArray(classNames)) {
             for (var i = 0, size = classNames.length; i < size; i++) {
-                clsList.add(classNames[i]);
+                var clsName = classNames[i];
+                if (clsName != null) {
+                    clsList.add(clsName);
+                }
             }
         }
         else if (classNames != null) {
@@ -39,12 +28,12 @@ var DomBuilder = /** @class */ (function () {
     };
     DomBuilder.prototype.id = function (id) {
         if (id != null) {
-            this.elem.id = id;
+            this.element.id = id;
         }
         return this;
     };
     DomBuilder.prototype.styles = function (styles, skipNulls) {
-        var elemStyle = this.elem.style;
+        var elemStyle = this.element.style;
         if (styles != null) {
             var keys = Object.keys(styles);
             for (var i = 0, size = keys.length; i < size; i++) {
@@ -58,12 +47,12 @@ var DomBuilder = /** @class */ (function () {
     };
     DomBuilder.prototype.style = function (name, value, skipNull) {
         if (!skipNull || value != null) {
-            this.elem.style[name] = (value ? String(value) : value);
+            this.element.style[name] = (value ? String(value) : value);
         }
         return this;
     };
     DomBuilder.prototype.attrs = function (attrs, skipNulls) {
-        var elem = this.elem;
+        var elem = this.element;
         if (attrs) {
             var attrsMap = attrs;
             for (var key in attrsMap) {
@@ -92,23 +81,23 @@ var DomBuilder = /** @class */ (function () {
     };
     DomBuilder.prototype._attr = function (name, value, skipNull) {
         if (!skipNull || value != null) {
-            this.elem.setAttribute(name, value);
+            this.element.setAttribute(name, value);
         }
         return this;
     };
     DomBuilder.prototype.text = function (textContent) {
-        this.elem.textContent = (textContent ? String(textContent) : textContent);
+        this.element.textContent = (textContent ? String(textContent) : textContent);
         return this;
     };
     DomBuilder.prototype.addChild = function (elems) {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
                 var el = elems[i];
-                this.elem.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
+                this.element.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
             }
         }
         else if (elems) {
-            this.elem.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
+            this.element.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
         }
         return this;
     };
@@ -123,7 +112,7 @@ var DomBuilder = /** @class */ (function () {
     };
     DomBuilder.prototype.onEvent = function (eventName, handler, useCapture) {
         if (useCapture === void 0) { useCapture = false; }
-        this.elem.addEventListener(eventName, handler, useCapture);
+        this.element.addEventListener(eventName, handler, useCapture);
         return this;
     };
     DomBuilder.isDomBuilder = function (elem) {

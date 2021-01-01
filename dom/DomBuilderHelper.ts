@@ -6,6 +6,8 @@
 class DomBuilderHelper implements domBldr.BuilderHelper {
     private static _parser: DOMParser;
     private static _serializer: XMLSerializer;
+    private static parseBoolean = (str: string | null | undefined) => (str === "true");
+    private static parseBooleanLike = (str: string | null | undefined) => str === "1" ? true : (str === "0" ? false : Boolean(str));
 
     public static getParser() {
         return DomBuilderHelper._parser != null ? DomBuilderHelper._parser : (DomBuilderHelper._parser = new DOMParser());
@@ -38,66 +40,97 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== Element.attributes utils ====
 
-    public attrInt(elem: ElementLike, name: string, val?: number): number | null {
-        return this._attrGetOrSet(elem, name, parseInt, val !== undefined ? String(val) : undefined);
-    }
-
-
-    public attrFloat(elem: ElementLike, name: string, val?: number): number | null {
-        return this._attrGetOrSet(elem, name, parseFloat, val !== undefined ? String(val) : undefined);
-    }
-
-
-    public attrBool(elem: ElementLike, name: string, val?: boolean, skipSetFalse: boolean = true): boolean | null {
-        return this._attrGetOrSet(elem, name, (str) => str === "1" ? true : (str === "0" ? false : Boolean(str)), val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
-    }
-
-
-    public attrString(elem: ElementLike, name: string, val?: string, skipSetEmpty: boolean = true): string | null {
-        return this._attrGetOrSet(elem, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
-    }
-
-
-    private _attrGetOrSet<T extends string | number | boolean>(elem: ElementLike, name: string, parser: (str: string) => T, val: string | null | undefined): T | null {
+    public attrInt(elem: ElementLike, name: string, val?: number, throwIfMissing?: boolean): number | null {
+        // set
         if (val != null) {
-            elem.setAttribute(name, val);
-            return <any>val;
+            elem.setAttribute(name, String(val));
+            return val;
         }
-        var attr = elem.attributes.getNamedItem(name);
-        return attr ? parser(attr.value) : null;
+        // get
+        else {
+            return this._getAttrParse(elem, name, parseInt, throwIfMissing);
+        }
+    }
+
+
+    public attrFloat(elem: ElementLike, name: string, val?: number, throwIfMissing?: boolean): number | null {
+        // set
+        if (val != null) {
+            elem.setAttribute(name, String(val));
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, parseFloat, throwIfMissing);
+        }
+    }
+
+
+    public attrBool(elem: ElementLike, name: string, val?: boolean, skipSetFalse: boolean = true, throwIfMissing?: boolean): boolean | null {
+        // set
+        if (val != null) {
+            var valStr = val ? "1" : (skipSetFalse ? undefined : "0");
+            if (valStr != null) {
+                elem.setAttribute(name, valStr);
+            }
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, DomBuilderHelper.parseBooleanLike, throwIfMissing);
+        }
+    }
+
+
+    public attrString(elem: ElementLike, name: string, val?: string, skipSetEmpty: boolean = true, throwIfMissing?: boolean): string | null {
+        // set
+        if (val != null) {
+            var valStr = skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val);
+            if (valStr != null) {
+                elem.setAttribute(name, valStr);
+            }
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, String, throwIfMissing);
+        }
     }
 
 
     // ==== Get attributes from Node ====
 
-    public getNodeAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number): number | null {
-        return this._nodeAttrParse(elem, attrName, parseInt, defaultValue);
+    public getAttrInt(elem: HasAttributes, attrName: string, defaultValue?: number, throwIfMissing?: boolean): number | null {
+        return this._getAttrParse(elem, attrName, parseInt, throwIfMissing) ?? (defaultValue != null ? defaultValue : null);
     }
 
 
-    public getNodeAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number): number | null {
-        return this._nodeAttrParse(elem, attrName, parseFloat, defaultValue);
+    public getAttrFloat(elem: HasAttributes, attrName: string, defaultValue?: number, throwIfMissing?: boolean): number | null {
+        return this._getAttrParse(elem, attrName, parseFloat, throwIfMissing) ?? (defaultValue != null ? defaultValue : null);
     }
 
 
-    public getNodeAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean): boolean | null {
-        return this._nodeAttrParse(elem, attrName, (str) => (str === "true"), defaultValue);
+    public getAttrBool(elem: HasAttributes, attrName: string, defaultValue?: boolean, throwIfMissing?: boolean): boolean | null {
+        return this._getAttrParse(elem, attrName, DomBuilderHelper.parseBoolean, throwIfMissing) ?? (defaultValue != null ? defaultValue : null);
     }
 
 
-    public getNodeAttrString(elem: HasAttributes, attrName: string, defaultValue?: string): string | null {
-        return this._nodeAttrParse(elem, attrName, String, defaultValue);
+    public getAttrString(elem: HasAttributes, attrName: string, defaultValue?: string, throwIfMissing?: boolean): string | null {
+        return this._getAttrParse(elem, attrName, String, throwIfMissing) ?? (defaultValue != null ? defaultValue : null);
     }
 
 
-    private _nodeAttrParse<T>(elem: HasAttributes, attrName: string, parser: (str: string) => T, defaultValue?: T): T | null {
+    private _getAttrParse<T>(elem: HasAttributes, attrName: string, parser: (str: string) => T, throwIfMissing: boolean | null | undefined): T | null {
         if (elem == null) { return null; }
         var attr = elem.attributes.getNamedItem(attrName);
-        return attr != null ? parser(attr.value) : (defaultValue != null ? defaultValue : null);
+        if (throwIfMissing && attr == null) {
+            throw this._validator.missingAttribute(attrName, elem);
+        }
+        return attr != null ? parser(attr.value) : null;
     }
 
 
-    public removeNodeAttr(elem: HasAttributes, name: string) {
+    public removeAttr(elem: HasAttributes, name: string) {
         if (elem) {
             elem.attributes.removeNamedItem(name);
         }
@@ -105,9 +138,8 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
 
     /** get multiple attributes from a Node and return them as an object */
-    public getNodeAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string };
-    public getNodeAttrs<T extends object>(elem: HasAttributes, attrNames: (keyof T & string)[], skipNull?: boolean): T {
-        var res = <T>{};
+    public getAttrs<K extends string>(elem: HasAttributes, attrNames: K[], skipNull?: boolean): { [P in K]: string | null } {
+        var res = <{ [P in K]: string | null }>{};
         if (elem == null) {
             return res;
         }
@@ -116,7 +148,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
             var attrName = attrNames[i];
             var attr = attrs.getNamedItem(attrName);
             if (!skipNull || attr != null) {
-                res[attrName] = attr != null ? <any>attr.value : <any>null;
+                res[attrName] = attr != null ? attr.value : null;
             }
         }
         return res;
@@ -125,41 +157,52 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
 
     // ==== .children ====
 
-    public queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T {
-        // TODO only the newest browsers support this
-        var res = (<T>parent.querySelector(":scope > " + selectors));
+    public queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T;
+    public queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string, throwIfNone?: boolean): T | null;
+    public queryOneChild<T extends Element>(parent: NodeSelectorLike | T, selectors: string, throwIfNone: boolean = true): T | null {
+        // NOTE: only newer browsers support this
+        var res = parent.querySelector<T>(":scope > " + selectors);
+        if (throwIfNone && res == null) {
+            throw this._validator.missingNode(selectors, parent);
+        }
         return res;
     }
 
 
     public queryOneAndGetChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
-        var res = (<HTMLElement>parent.querySelector(selectors));
-        if (!res) { throw this._validator.missingNode(selectors); }
+        var res = parent.querySelector<T>(selectors);
+        if (!res) { throw this._validator.missingNode(selectors, parent); }
         var resAry = Array.prototype.slice.call(res.children);
         return resAry;
     }
 
 
+    public queryAllChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
+        // NOTE: only newer browsers support this
+        return this.queryAll<T>(parent, ":scope > " + selectors);
+    }
+
+
     public queryAll<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
-        var res = parent.querySelectorAll(selectors);
+        var res = parent.querySelectorAll<T>(selectors);
         var resAry = Array.prototype.slice.call(res);
         return resAry;
     }
 
 
-    public queryAllChilds<T extends Element>(parent: NodeSelectorLike | T, selectors: string): T[] {
-        // TODO only the newest browsers support this
-        return this.queryAll<T>(parent, ":scope > " + selectors);
-    }
-
-
-    public getChilds<T extends NodeLike>(elem: T): T[] {
+    public getChildNodes<T extends NodeLike>(elem: T): T[] {
         var resAry = Array.prototype.slice.call(elem.childNodes);
         return resAry;
     }
 
 
-    public removeChilds(elem: Element) {
+    public getChildren<T extends { children: HTMLCollectionBase }>(elem: T): Element[] {
+        var resAry: Element[] = Array.prototype.slice.call(elem.children);
+        return resAry;
+    }
+
+
+    public removeChilds(elem: Node): void {
         var lastChild: Node | null = null;
         while (lastChild = elem.lastChild) {
             elem.removeChild(lastChild);
@@ -167,7 +210,7 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 
-    public addChilds(parent: ElementLike, childs: ElementLike[] | ArrayLike<ElementLike>) {
+    public addChilds(parent: NodeLike, childs: NodeLike[] | ArrayLike<NodeLike>): void {
         for (var i = 0, size = childs.length; i < size; i++) {
             parent.appendChild(childs[i]);
         }

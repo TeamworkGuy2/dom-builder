@@ -20,54 +20,92 @@ var DomBuilderHelper = /** @class */ (function () {
         return DomBuilderHelper._serializer;
     };
     // ==== Element.attributes utils ====
-    DomBuilderHelper.prototype.attrInt = function (elem, name, val) {
-        return this._attrGetOrSet(elem, name, parseInt, val !== undefined ? String(val) : undefined);
-    };
-    DomBuilderHelper.prototype.attrFloat = function (elem, name, val) {
-        return this._attrGetOrSet(elem, name, parseFloat, val !== undefined ? String(val) : undefined);
-    };
-    DomBuilderHelper.prototype.attrBool = function (elem, name, val, skipSetFalse) {
-        if (skipSetFalse === void 0) { skipSetFalse = true; }
-        return this._attrGetOrSet(elem, name, function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); }, val !== undefined ? (val ? "1" : skipSetFalse ? undefined : "0") : undefined);
-    };
-    DomBuilderHelper.prototype.attrString = function (elem, name, val, skipSetEmpty) {
-        if (skipSetEmpty === void 0) { skipSetEmpty = true; }
-        return this._attrGetOrSet(elem, name, String, val !== undefined ? (skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val)) : undefined);
-    };
-    DomBuilderHelper.prototype._attrGetOrSet = function (elem, name, parser, val) {
+    DomBuilderHelper.prototype.attrInt = function (elem, name, val, throwIfMissing) {
+        // set
         if (val != null) {
-            elem.setAttribute(name, val);
+            elem.setAttribute(name, String(val));
             return val;
         }
-        var attr = elem.attributes.getNamedItem(name);
-        return attr ? parser(attr.value) : null;
+        // get
+        else {
+            return this._getAttrParse(elem, name, parseInt, throwIfMissing);
+        }
+    };
+    DomBuilderHelper.prototype.attrFloat = function (elem, name, val, throwIfMissing) {
+        // set
+        if (val != null) {
+            elem.setAttribute(name, String(val));
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, parseFloat, throwIfMissing);
+        }
+    };
+    DomBuilderHelper.prototype.attrBool = function (elem, name, val, skipSetFalse, throwIfMissing) {
+        if (skipSetFalse === void 0) { skipSetFalse = true; }
+        // set
+        if (val != null) {
+            var valStr = val ? "1" : (skipSetFalse ? undefined : "0");
+            if (valStr != null) {
+                elem.setAttribute(name, valStr);
+            }
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, DomBuilderHelper.parseBooleanLike, throwIfMissing);
+        }
+    };
+    DomBuilderHelper.prototype.attrString = function (elem, name, val, skipSetEmpty, throwIfMissing) {
+        if (skipSetEmpty === void 0) { skipSetEmpty = true; }
+        // set
+        if (val != null) {
+            var valStr = skipSetEmpty && (val == null || val.length === 0) ? undefined : String(val);
+            if (valStr != null) {
+                elem.setAttribute(name, valStr);
+            }
+            return val;
+        }
+        // get
+        else {
+            return this._getAttrParse(elem, name, String, throwIfMissing);
+        }
     };
     // ==== Get attributes from Node ====
-    DomBuilderHelper.prototype.getNodeAttrInt = function (elem, attrName, defaultValue) {
-        return this._nodeAttrParse(elem, attrName, parseInt, defaultValue);
+    DomBuilderHelper.prototype.getAttrInt = function (elem, attrName, defaultValue, throwIfMissing) {
+        var _a;
+        return (_a = this._getAttrParse(elem, attrName, parseInt, throwIfMissing)) !== null && _a !== void 0 ? _a : (defaultValue != null ? defaultValue : null);
     };
-    DomBuilderHelper.prototype.getNodeAttrFloat = function (elem, attrName, defaultValue) {
-        return this._nodeAttrParse(elem, attrName, parseFloat, defaultValue);
+    DomBuilderHelper.prototype.getAttrFloat = function (elem, attrName, defaultValue, throwIfMissing) {
+        var _a;
+        return (_a = this._getAttrParse(elem, attrName, parseFloat, throwIfMissing)) !== null && _a !== void 0 ? _a : (defaultValue != null ? defaultValue : null);
     };
-    DomBuilderHelper.prototype.getNodeAttrBool = function (elem, attrName, defaultValue) {
-        return this._nodeAttrParse(elem, attrName, function (str) { return (str === "true"); }, defaultValue);
+    DomBuilderHelper.prototype.getAttrBool = function (elem, attrName, defaultValue, throwIfMissing) {
+        var _a;
+        return (_a = this._getAttrParse(elem, attrName, DomBuilderHelper.parseBoolean, throwIfMissing)) !== null && _a !== void 0 ? _a : (defaultValue != null ? defaultValue : null);
     };
-    DomBuilderHelper.prototype.getNodeAttrString = function (elem, attrName, defaultValue) {
-        return this._nodeAttrParse(elem, attrName, String, defaultValue);
+    DomBuilderHelper.prototype.getAttrString = function (elem, attrName, defaultValue, throwIfMissing) {
+        var _a;
+        return (_a = this._getAttrParse(elem, attrName, String, throwIfMissing)) !== null && _a !== void 0 ? _a : (defaultValue != null ? defaultValue : null);
     };
-    DomBuilderHelper.prototype._nodeAttrParse = function (elem, attrName, parser, defaultValue) {
+    DomBuilderHelper.prototype._getAttrParse = function (elem, attrName, parser, throwIfMissing) {
         if (elem == null) {
             return null;
         }
         var attr = elem.attributes.getNamedItem(attrName);
-        return attr != null ? parser(attr.value) : (defaultValue != null ? defaultValue : null);
+        if (throwIfMissing && attr == null) {
+            throw this._validator.missingAttribute(attrName, elem);
+        }
+        return attr != null ? parser(attr.value) : null;
     };
-    DomBuilderHelper.prototype.removeNodeAttr = function (elem, name) {
+    DomBuilderHelper.prototype.removeAttr = function (elem, name) {
         if (elem) {
             elem.attributes.removeNamedItem(name);
         }
     };
-    DomBuilderHelper.prototype.getNodeAttrs = function (elem, attrNames, skipNull) {
+    /** get multiple attributes from a Node and return them as an object */
+    DomBuilderHelper.prototype.getAttrs = function (elem, attrNames, skipNull) {
         var res = {};
         if (elem == null) {
             return res;
@@ -82,31 +120,38 @@ var DomBuilderHelper = /** @class */ (function () {
         }
         return res;
     };
-    // ==== .children ====
-    DomBuilderHelper.prototype.queryOneChild = function (parent, selectors) {
-        // TODO only the newest browsers support this
+    DomBuilderHelper.prototype.queryOneChild = function (parent, selectors, throwIfNone) {
+        if (throwIfNone === void 0) { throwIfNone = true; }
+        // NOTE: only newer browsers support this
         var res = parent.querySelector(":scope > " + selectors);
+        if (throwIfNone && res == null) {
+            throw this._validator.missingNode(selectors, parent);
+        }
         return res;
     };
     DomBuilderHelper.prototype.queryOneAndGetChilds = function (parent, selectors) {
         var res = parent.querySelector(selectors);
         if (!res) {
-            throw this._validator.missingNode(selectors);
+            throw this._validator.missingNode(selectors, parent);
         }
         var resAry = Array.prototype.slice.call(res.children);
         return resAry;
+    };
+    DomBuilderHelper.prototype.queryAllChilds = function (parent, selectors) {
+        // NOTE: only newer browsers support this
+        return this.queryAll(parent, ":scope > " + selectors);
     };
     DomBuilderHelper.prototype.queryAll = function (parent, selectors) {
         var res = parent.querySelectorAll(selectors);
         var resAry = Array.prototype.slice.call(res);
         return resAry;
     };
-    DomBuilderHelper.prototype.queryAllChilds = function (parent, selectors) {
-        // TODO only the newest browsers support this
-        return this.queryAll(parent, ":scope > " + selectors);
-    };
-    DomBuilderHelper.prototype.getChilds = function (elem) {
+    DomBuilderHelper.prototype.getChildNodes = function (elem) {
         var resAry = Array.prototype.slice.call(elem.childNodes);
+        return resAry;
+    };
+    DomBuilderHelper.prototype.getChildren = function (elem) {
+        var resAry = Array.prototype.slice.call(elem.children);
         return resAry;
     };
     DomBuilderHelper.prototype.removeChilds = function (elem) {
@@ -120,6 +165,8 @@ var DomBuilderHelper = /** @class */ (function () {
             parent.appendChild(childs[i]);
         }
     };
+    DomBuilderHelper.parseBoolean = function (str) { return (str === "true"); };
+    DomBuilderHelper.parseBooleanLike = function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); };
     return DomBuilderHelper;
 }());
 module.exports = DomBuilderHelper;

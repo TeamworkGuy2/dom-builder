@@ -8,31 +8,24 @@
  * @since 2016-04-26
  */
 class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBldr.Builder<T> {
-    private elem: T;
-    private dom: D;
+    public element: T;
+    public dom: D;
 
 
     constructor(elem: T, dom: D) {
-        this.elem = elem;
+        this.element = elem;
         this.dom = dom;
     }
 
 
-    public get element() {
-        return this.elem;
-    }
-
-
-    public get document() {
-        return this.dom;
-    }
-
-
-    public classes(classNames: string | string[] | null | undefined): this {
-        var clsList = this.elem.classList;
+    public classes(classNames: string | (string | null)[] | null | undefined): this {
+        var clsList = this.element.classList;
         if (Array.isArray(classNames)) {
             for (var i = 0, size = classNames.length; i < size; i++) {
-                (<DOMTokenList>clsList).add(classNames[i]);
+                var clsName = classNames[i];
+                if (clsName != null) {
+                    (<DOMTokenList>clsList).add(clsName);
+                }
             }
         }
         else if (classNames != null) {
@@ -44,14 +37,14 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
     public id(id: string | null | undefined): this {
         if (id != null) {
-            this.elem.id = id;
+            this.element.id = id;
         }
         return this;
     }
 
 
-    public styles(styles: { [name: string]: string | number | boolean } | null | undefined, skipNulls?: boolean): this {
-        var elemStyle = this.elem.style;
+    public styles(styles: { [name: string]: string | number | boolean | null | undefined } | null | undefined, skipNulls?: boolean): this {
+        var elemStyle = this.element.style;
 
         if (styles != null) {
             var keys = Object.keys(styles);
@@ -66,21 +59,21 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    public style(name: string, value: string | number | boolean, skipNull?: boolean): this {
+    public style(name: string, value: string | number | boolean | null | undefined, skipNull?: boolean): this {
         if (!skipNull || value != null) {
-            (<CSSStyleDeclaration>this.elem.style)[<number><any>name] = <string>(value ? String(value) : value);
+            (<CSSStyleDeclaration>this.element.style)[<number><any>name] = <string>(value ? String(value) : value);
         }
         return this;
     }
 
 
-    public attrs(attrs: { [name: string]: string | number | boolean }, skipNulls?: boolean): this;
+    public attrs(attrs: { [name: string]: string | number | boolean | null | undefined }, skipNulls?: boolean): this;
     public attrs<U extends object>(attrs: U, skipNulls?: boolean): this;
     public attrs(attrs: any, skipNulls?: boolean): this {
-        var elem = this.elem;
+        var elem = this.element;
 
         if (attrs) {
-            var attrsMap = <{ [name: string]: string | number | boolean }>attrs;
+            var attrsMap = <{ [name: string]: string | number | boolean | null | undefined }>attrs;
             for (var key in attrsMap) {
                 var attrVal = attrsMap[key];
                 if (Object.prototype.hasOwnProperty.call(attrsMap, key) && (!skipNulls || attrVal != null)) {
@@ -92,36 +85,36 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    public attr(name: string, value: string | number | boolean, skipNull?: boolean): this {
+    public attr(name: string, value: string | number | boolean | null | undefined, skipNull?: boolean): this {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrBool(name: string, value: boolean, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): this {
+    public attrBool(name: string, value: boolean | null | undefined, skipFalseOrNull?: boolean, trueVal?: string, falseVal?: string): this {
         return this._attr(name, skipFalseOrNull && (value == null || value == false) ? null : value === true ? (trueVal !== undefined ? trueVal : "true") : (falseVal !== undefined ? falseVal : "false"), skipFalseOrNull);
     }
 
-    public attrInt(name: string, value: number, skipNull?: boolean): this {
+    public attrInt(name: string, value: number | null | undefined, skipNull?: boolean): this {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrFloat(name: string, value: number, skipNull?: boolean): this {
+    public attrFloat(name: string, value: number | null | undefined, skipNull?: boolean): this {
         return this._attr(name, skipNull && value == null ? null : String(value), skipNull);
     }
 
-    public attrString(name: string, value: string, skipEmptyOrNull?: boolean): this {
+    public attrString(name: string, value: string | null | undefined, skipEmptyOrNull?: boolean): this {
         return this._attr(name, skipEmptyOrNull && (value == null || value.length === 0) ? null : value, skipEmptyOrNull);
     }
 
-    private _attr(name: string, value: string | null, skipNull?: boolean): this {
+    private _attr(name: string, value: string | null | undefined, skipNull?: boolean): this {
         if (!skipNull || value != null) {
-            this.elem.setAttribute(name, value);
+            this.element.setAttribute(name, value);
         }
         return this;
     }
 
 
-    public text(textContent: string | number | boolean): this {
-        this.elem.textContent = <string>(textContent ? String(textContent) : textContent);
+    public text(textContent: string | number | boolean | null | undefined): this {
+        this.element.textContent = <string><any>(textContent ? String(textContent) : textContent);
         return this;
     }
 
@@ -130,11 +123,11 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
                 var el = elems[i];
-                this.elem.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
+                this.element.appendChild(DomBuilder.isDomBuilder(el) ? el.element : el);
             }
         }
         else if (elems) {
-            this.elem.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
+            this.element.appendChild(DomBuilder.isDomBuilder(elems) ? elems.element : elems);
         }
         return this;
     }
@@ -152,12 +145,12 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
 
     public onEvent(eventName: string, handler: (evt: Event) => any, useCapture: boolean = false): this {
-        this.elem.addEventListener(eventName, handler, useCapture);
+        this.element.addEventListener(eventName, handler, useCapture);
         return this;
     }
 
 
-    private static isDomBuilder<S extends ElementLike, D extends DocumentLike>(elem: S | domBldr.Builder<S>): elem is domBldr.Builder<S> {
+    private static isDomBuilder<S extends ElementLike>(elem: S | domBldr.Builder<S>): elem is domBldr.Builder<S> {
         return (<domBldr.Builder<S>>elem).textOrChild !== undefined && (<domBldr.Builder<S>>elem).attr !== undefined;
     }
 

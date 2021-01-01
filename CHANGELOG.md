@@ -4,7 +4,29 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.8.0](N/A) - 2020-09-04
+### [0.9.0](N/A) - 2021-01-01
+#### Added
+* BREAKING: Added `DomValidate.missingAttribute()` interface method - implementations will need to add this
+* A lot of `dom-builder.d.ts` documentation for `DomBuilderHelper`
+* Added optional 'parent' argument to `DomValidate.missingNode()`
+* `NodeLike.removeChild()`
+* DomLite `ElemLite` now implements `firstChild`, `lastChild`, and `removeChild()`
+
+#### Changed
+* `BuilderHelper` interface changes and `DomBuilderHelper` implementation changes:
+  * BREAKING: `getChilds()` split and renamed into `getChildren()` and `getChildNodes()`
+  * BREAKING: `getNodeAttrs()` renamed `getAttrs()`
+  * BREAKING: `removeNodeAttr()` renamed `removeAttr()`
+  * BREAKING: `getNodeAttr*[Int|Float|Bool|String]()` methods renamed `getAttr*()` (i.e. `getNodeAttrInt()` is now `getAttrInt()`)
+  * Simplify `getAttrs()` overload signature
+  * `attr*()` and `getAttr*()` methods have a new optional `throwIfMissing` argument
+  * `queryOneChild()` now correctly returns `T | null`
+  * `addChilds()` and `removeChilds()` expanded to accept `NodeLike` and `Node` instead of `ElementLike` and `Element`
+* `DomBuilder` `element` is no longer a getter but a public field, can be set. Since `DomBuilder` has no other internal state besides `dom`, changing the `element` value should be safe.
+
+
+--------
+### [0.8.0](https://github.com/TeamworkGuy2/dom-builder/commit/64f8dcbc30e4a1dec5842e0dcdcb7e89d9e0d86c) - 2020-09-04
 #### Changed
 * Update to TypeScript 4.0
 

@@ -39,7 +39,7 @@ module DomLite {
         doc: ElementLike;
 
 
-        constructor(ns: string, rootNodeName: string) {
+        constructor(ns: string | null, rootNodeName: string) {
             this.doc = this.createElement(rootNodeName);
             if (ns != null) {
                 (<NamedNodeMapLike>this.doc.attributes).setNamedItem({ name: "xmlns", value: ns });
@@ -88,6 +88,8 @@ module DomLite {
         nodeName: string;
         nodeValue: string | null = null;
         textContent: string | null = null;
+        firstChild: NodeLike | null = null;
+        lastChild: NodeLike | null = null;
         _attributes: (NamedNodeMapLike & AttributeLike[]) | null = null;
         _childNodes: (NodeListLike & NodeLike[]) | null = null;
         _classList?: (DOMTokenList & string[]) | null;
@@ -117,9 +119,36 @@ module DomLite {
 
 
         public appendChild<T extends NodeLike>(newChild: T): T {
-            this._childNodes = this._childNodes || createNodeList();
-            this._childNodes.push(newChild);
+            var childs = this._childNodes = this._childNodes || createNodeList();
+            childs.push(newChild);
+            if (childs.length === 1) {
+                this.firstChild = newChild;
+            }
+            this.lastChild = newChild;
             return newChild;
+        }
+
+
+        public removeChild<T extends NodeLike>(oldChild: T): T {
+            var childs = this._childNodes;
+            var idx = childs?.indexOf(oldChild) ?? -1;
+
+            if (childs != null && idx > -1) {
+                // update childNodes
+                removeIndex(childs, idx);
+                // update firstChild/lastChild
+                if (idx === childs.length) {
+                    if (childs.length > 0) {
+                        this.lastChild = childs[childs.length - 1];
+                    }
+                    else {
+                        this.lastChild = null;
+                        this.firstChild = null;
+                    }
+                }
+                return oldChild;
+            }
+            throw new Error("The node to be removed is not a child of this node");
         }
 
 
@@ -175,6 +204,8 @@ module DomLite {
             copy._childNodes = (deep && this._childNodes != null ? createNodeList(this._childNodes, deep) : null);
             copy._classList = (deep && this._classList != null ? createDomTokenList(this._classList) : null);
             copy._style = (deep && this._style != null ? createCssStyle(this._style) : null);
+            copy.firstChild = copy._childNodes && copy._childNodes.length > 0 ? copy._childNodes[0] : null;
+            copy.lastChild = copy._childNodes && copy._childNodes.length > 0 ? copy._childNodes[copy._childNodes.length - 1] : null;
             return copy;
         }
 
@@ -202,13 +233,18 @@ module DomLite {
         }
 
 
+        public removeChild<T extends ElementLike>(oldChild: T): T {
+            throw new Error("Child nodes cannot be removed from a Text node");
+        }
+
+
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void {
             // do nothing
         }
 
 
         public toString() {
-            return this.nodeValue;
+            return this.nodeValue || "";
         }
 
 
@@ -423,6 +459,31 @@ module DomLite {
         });
 
         return inst;
+    }
+
+
+    // copied from 'ts-mortar@0.20.1'
+    /** Remove an index from an array
+     * For example: Arrays.removeIndex(["Alpha", "Beta", "Gamma"], 1)
+     * returns: ["Alpha", "Gamma"]
+     *
+     * @param ary the array to remove an index from
+     * @param index the index of the value to remove
+     * @returns the 'ary' with the value at 'index' removed
+     */
+    function removeIndex<E>(ary: E[], index: number): E[];
+    function removeIndex<E>(ary: E[] | null | undefined, index: number): E[] | null;
+    function removeIndex<E>(ary: E[] | null | undefined, index: number): E[] | null {
+        if (ary == null) { return null; }
+        var size = ary.length;
+        if (size < 1 || index < 0 || index >= size) { return ary; }
+
+        for (var i = index + 1; i < size; i++) {
+            ary[i - 1] = ary[i];
+        }
+        ary[size - 1] = <never>null;
+        ary.length = size - 1;
+        return ary;
     }
 
 }

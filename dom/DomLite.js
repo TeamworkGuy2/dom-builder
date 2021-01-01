@@ -58,6 +58,8 @@ var DomLite;
             this.id = "";
             this.nodeValue = null;
             this.textContent = null;
+            this.firstChild = null;
+            this.lastChild = null;
             this._attributes = null;
             this._childNodes = null;
             this.nodeName = qualifiedName;
@@ -91,9 +93,34 @@ var DomLite;
             configurable: true
         });
         ElemLike.prototype.appendChild = function (newChild) {
-            this._childNodes = this._childNodes || createNodeList();
-            this._childNodes.push(newChild);
+            var childs = this._childNodes = this._childNodes || createNodeList();
+            childs.push(newChild);
+            if (childs.length === 1) {
+                this.firstChild = newChild;
+            }
+            this.lastChild = newChild;
             return newChild;
+        };
+        ElemLike.prototype.removeChild = function (oldChild) {
+            var _a;
+            var childs = this._childNodes;
+            var idx = (_a = childs === null || childs === void 0 ? void 0 : childs.indexOf(oldChild)) !== null && _a !== void 0 ? _a : -1;
+            if (childs != null && idx > -1) {
+                // update childNodes
+                removeIndex(childs, idx);
+                // update firstChild/lastChild
+                if (idx === childs.length) {
+                    if (childs.length > 0) {
+                        this.lastChild = childs[childs.length - 1];
+                    }
+                    else {
+                        this.lastChild = null;
+                        this.firstChild = null;
+                    }
+                }
+                return oldChild;
+            }
+            throw new Error("The node to be removed is not a child of this node");
         };
         ElemLike.prototype.addEventListener = function (type, listener, options) {
             // do nothing
@@ -135,6 +162,8 @@ var DomLite;
             copy._childNodes = (deep && this._childNodes != null ? createNodeList(this._childNodes, deep) : null);
             copy._classList = (deep && this._classList != null ? createDomTokenList(this._classList) : null);
             copy._style = (deep && this._style != null ? createCssStyle(this._style) : null);
+            copy.firstChild = copy._childNodes && copy._childNodes.length > 0 ? copy._childNodes[0] : null;
+            copy.lastChild = copy._childNodes && copy._childNodes.length > 0 ? copy._childNodes[copy._childNodes.length - 1] : null;
             return copy;
         };
         return ElemLike;
@@ -151,11 +180,14 @@ var DomLite;
         TextNodeLike.prototype.appendChild = function (newChild) {
             throw new Error("Child nodes cannot be appended to a Text node");
         };
+        TextNodeLike.prototype.removeChild = function (oldChild) {
+            throw new Error("Child nodes cannot be removed from a Text node");
+        };
         TextNodeLike.prototype.addEventListener = function (type, listener, options) {
             // do nothing
         };
         TextNodeLike.prototype.toString = function () {
-            return this.nodeValue;
+            return this.nodeValue || "";
         };
         TextNodeLike.prototype.cloneNode = function (deep) {
             return new TextNodeLike(this.nodeValue);
@@ -362,5 +394,20 @@ var DomLite;
         return inst;
     }
     DomLite.createDomTokenList = createDomTokenList;
+    function removeIndex(ary, index) {
+        if (ary == null) {
+            return null;
+        }
+        var size = ary.length;
+        if (size < 1 || index < 0 || index >= size) {
+            return ary;
+        }
+        for (var i = index + 1; i < size; i++) {
+            ary[i - 1] = ary[i];
+        }
+        ary[size - 1] = null;
+        ary.length = size - 1;
+        return ary;
+    }
 })(DomLite || (DomLite = {}));
 module.exports = DomLite;
