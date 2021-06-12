@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.9.0](N/A) - 2021-01-01
+### [0.10.0](N/A) - 2021-06-12
+#### Changed
+* Update to TypeScript 4.3
+
+
+--------
+### [0.9.0](https://github.com/TeamworkGuy2/dom-builder/commit/34a68dc98a7c090545d4a953818819bb5d855312) - 2021-01-01
 #### Added
 * BREAKING: Added `DomValidate.missingAttribute()` interface method - implementations will need to add this
 * A lot of `dom-builder.d.ts` documentation for `DomBuilderHelper`
