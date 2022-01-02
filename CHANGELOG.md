@@ -4,7 +4,13 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.10.0](N/A) - 2021-06-12
+### [0.11.0](N/A) - 2022-01-02
+#### Changed
+* Update to TypeScript 4.4
+
+
+--------
+### [0.10.0](https://github.com/TeamworkGuy2/dom-builder/commit/88405417bbf4352ccfbcd9823086abe4fbdcf8d2) - 2021-06-12
 #### Changed
 * Update to TypeScript 4.3
 

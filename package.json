@@ -1,6 +1,6 @@
 {
   "name": "@twg2/dom-builder",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "TypeScript DOM builder utils, static helpers for element attributes and childNodes, and a virtual DOM implementation.",
   "author": "TeamworkGuy2",
   "homepage": "https://github.com/TeamworkGuy2/dom-builder",
@@ -15,7 +15,7 @@
     "@types/mocha": "~5.2.7",
     "chai": "~4.2.0",
     "mocha": "~5.2.0",
-    "typescript": "~4.3.2"
+    "typescript": "~4.4.4"
   },
   "scripts": {
     "test": "node node_modules/mocha/bin/_mocha -u tdd --recursive",
