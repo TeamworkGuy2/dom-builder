@@ -1,7 +1,7 @@
-﻿import chai = require("chai");
-import DomLite = require("../dom/DomLite");
-import DomBuilderFactory = require("../dom/DomBuilderFactory");
-import DomBuilderHelper = require("../dom/DomBuilderHelper");
+﻿import * as chai from "chai";
+import { DomLite } from "../dom/DomLite";
+import { DomBuilderFactory } from "../dom/DomBuilderFactory";
+import { DomBuilderHelper } from "../dom/DomBuilderHelper";
 
 var asr = chai.assert;
 

@@ -1,22 +1,43 @@
-﻿import domBldr = require("dom-builder");
+﻿import { BuilderHelper } from "dom-builder";
 
-/** Helper functions for XMLDocument Node attributes and children
+/** Helper functions for XMLDocument Node attributes and children.
+ * Includes a global {@link getParser} and {@link getSerializer} which default to {@link DOMParser} and {@link XMLSerializer},
+ * but can be overridden.
  * @since 2016-04-27
  */
-class DomBuilderHelper implements domBldr.BuilderHelper {
+export class DomBuilderHelper implements BuilderHelper {
     private static _parser: DOMParser;
     private static _serializer: XMLSerializer;
     private static parseBoolean = (str: string | null | undefined) => (str === "true");
     private static parseBooleanLike = (str: string | null | undefined) => str === "1" ? true : (str === "0" ? false : Boolean(str));
 
+    /**
+     * @returns the last parser set by {@link setParser} or a default {@link DOMParser}
+     */
     public static getParser() {
         return DomBuilderHelper._parser != null ? DomBuilderHelper._parser : (DomBuilderHelper._parser = new DOMParser());
     }
 
+    /**
+     * @returns the last serializer set by {@link setSerializer} or a default {@link XMLSerializer}
+     */
     public static getSerializer() {
         return DomBuilderHelper._serializer != null ? DomBuilderHelper._serializer : (DomBuilderHelper._serializer = new XMLSerializer());
     }
 
+    /**
+     * Set the default parser returned by {@link getParser}
+     */
+    public static setParser(parser: DOMParser) {
+        DomBuilderHelper._parser = parser;
+    }
+
+    /**
+     * Set the default serializer returned by {@link getSerializer}
+     */
+    public static setSerializer(serializer: XMLSerializer) {
+        DomBuilderHelper._serializer = serializer;
+    }
 
     private _dom: DocumentLike;
     private _validator: DomValidate;
@@ -217,5 +238,3 @@ class DomBuilderHelper implements domBldr.BuilderHelper {
     }
 
 }
-
-export = DomBuilderHelper;

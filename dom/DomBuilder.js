@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomBuilder = void 0;
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Reduces the code required to create and setup a new element for insertion into a Document.
  * Includes functions to set the element's ID, add class names, add styles, set attributes, set the element's text content, and add child elements.
@@ -81,7 +83,16 @@ var DomBuilder = /** @class */ (function () {
     };
     DomBuilder.prototype._attr = function (name, value, skipNull) {
         if (!skipNull || value != null) {
-            this.element.setAttribute(name, value);
+            var colonIdx = name.indexOf(':');
+            if (colonIdx > 0) {
+                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+            }
+            if (this.element.namespaceURI) {
+                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+            }
+            else {
+                this.element.setAttribute(name, value);
+            }
         }
         return this;
     };
@@ -125,4 +136,4 @@ var DomBuilder = /** @class */ (function () {
     };
     return DomBuilder;
 }());
-module.exports = DomBuilder;
+exports.DomBuilder = DomBuilder;

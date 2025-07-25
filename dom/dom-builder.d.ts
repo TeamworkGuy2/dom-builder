@@ -40,7 +40,7 @@ interface DomBuilder<T extends ElementLike> {
 }
 
 
-/** A utility for creating various HTMLElement instances and returning the HTMLElement wrapped in a new DomBuilder instance
+/** Factory for creating various HTMLElement instances and returning the HTMLElement wrapped in a new DomBuilder instance
  * @author TeamworkGuy2
  * @since 2016-04-26
  */
@@ -168,6 +168,9 @@ interface DomValidate {
 interface AttributeLike {
     readonly name: string;
     value: string;
+    readonly localName?: string;
+    readonly namespaceURI?: string | null;
+    readonly prefix?: string | null;
 }
 
 
@@ -191,6 +194,7 @@ interface DocumentLike {
 interface ElementLike extends NodeLike {
     id: string;
     attributes: NamedNodeMapLike;
+    namespaceURI?: string | null;
     classList?: DOMTokenList;
     style?: CSSStyleDeclaration;
 

@@ -1,7 +1,11 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomLite = void 0;
 var DomLite;
 (function (DomLite) {
     var EMPTY_LIST = Object.freeze(createNodeList());
+    var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    var XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
     function createElement(qualifiedName) {
         return new ElemLike(qualifiedName, null);
     }
@@ -16,9 +20,28 @@ var DomLite;
     DomLite.createAttribute = createAttribute;
     var AttrLike = /** @class */ (function () {
         function AttrLike(qualifiedName, value, namespaceUri) {
+            var colonIdx = qualifiedName.indexOf(":");
             this.name = qualifiedName;
+            this.namespaceURI = namespaceUri || null;
             this.value = "" + value;
-            this.ns = namespaceUri || null;
+            if (colonIdx > 0) {
+                this.localName = qualifiedName.substring(colonIdx + 1);
+                this.prefix = qualifiedName.substring(0, colonIdx);
+                // force overwrite the namespace URI if it's known
+                // the correct logic is:
+                // - check the 'prefix' against top level namespaces
+                // - check the 'prefix' against the namespace hierarchy of parent tags
+                // - 'xmlns' seems to correspond to the empty '' prefix,
+                //   i.e. nodes without a 'prefix' inherit the first 'xmlns' attribute of the parent tag hierarchy or the default XMLNS_NAMESPACE?
+                switch (this.prefix) {
+                    case 'xml':
+                        this.namespaceURI = XML_NAMESPACE;
+                        break;
+                    case 'xmlns':
+                        this.namespaceURI = XMLNS_NAMESPACE;
+                        break;
+                }
+            }
         }
         return AttrLike;
     }());
@@ -63,6 +86,9 @@ var DomLite;
             this._attributes = null;
             this._childNodes = null;
             this.nodeName = qualifiedName;
+            if (namespaceUri) {
+                this.namespaceURI = namespaceUri;
+            }
         }
         Object.defineProperty(ElemLike.prototype, "attributes", {
             get: function () {
@@ -126,19 +152,21 @@ var DomLite;
             // do nothing
         };
         ElemLike.prototype.setAttribute = function (name, value) {
-            this.attributes.setNamedItem({ name: name, value: value });
+            this.attributes.setNamedItem(createAttribute(name, value, this.namespaceURI));
         };
         ElemLike.prototype.setAttributeNS = function (namespaceURI, qualifiedName, value) {
-            this.attributes.setNamedItem({ name: qualifiedName, value: value });
+            this.attributes.setNamedItemNS(createAttribute(qualifiedName, value, namespaceURI || this.namespaceURI));
         };
         ElemLike.prototype.toString = function (indent, currentIndent) {
             var str = (currentIndent || "") + "<" + this.nodeName;
-            var attrs = (this._attributes != null ? [] : null);
-            for (var i = 0, size = this._attributes != null ? this._attributes.length : 0; i < size; i++) {
-                var attr = this._attributes[i];
-                attrs.push(attr.name + "=\"" + attr.value + "\"");
+            if (this._attributes != null) {
+                var attrs = [];
+                for (var i = 0, size = this._attributes.length; i < size; i++) {
+                    var attr = this._attributes[i];
+                    attrs.push(attr.name + "=\"" + attr.value + "\"");
+                }
+                str += (attrs.length > 0 ? " " + attrs.join(" ") : "");
             }
-            str += (attrs != null && attrs.length > 0 ? " " + attrs.join(" ") : "");
             var hasText = this.textContent != null && this.textContent.length > 0;
             size = this._childNodes != null ? this._childNodes.length : 0;
             str += (!hasText && size < 1 ? " />" : (">" + (hasText ? this.textContent : "")));
@@ -154,7 +182,7 @@ var DomLite;
             return str;
         };
         ElemLike.prototype.cloneNode = function (deep) {
-            var copy = new ElemLike(this.nodeName, null);
+            var copy = new ElemLike(this.nodeName, this.namespaceURI);
             copy.id = this.id;
             copy.nodeValue = this.nodeValue;
             copy.textContent = this.textContent;
@@ -409,5 +437,4 @@ var DomLite;
         ary.length = size - 1;
         return ary;
     }
-})(DomLite || (DomLite = {}));
-module.exports = DomLite;
+})(DomLite = exports.DomLite || (exports.DomLite = {}));

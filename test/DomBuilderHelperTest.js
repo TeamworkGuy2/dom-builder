@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var chai = require("chai");
-var DomLite = require("../dom/DomLite");
-var DomBuilderFactory = require("../dom/DomBuilderFactory");
-var DomBuilderHelper = require("../dom/DomBuilderHelper");
+var DomLite_1 = require("../dom/DomLite");
+var DomBuilderFactory_1 = require("../dom/DomBuilderFactory");
+var DomBuilderHelper_1 = require("../dom/DomBuilderHelper");
 var asr = chai.assert;
 suite("DomBuilderHelper", function domLite() {
     test("getAttrs", function getAttrsTest() {
-        var dh = new DomBuilderHelper(null, null);
-        var attributes = DomLite.createNamedNodeMap([
+        var dh = new DomBuilderHelper_1.DomBuilderHelper(null, null);
+        var attributes = DomLite_1.DomLite.createNamedNodeMap([
             { name: "attr1", value: "A1" },
             { name: "attr2", value: "2" },
             { name: "type", value: "123" },
@@ -19,8 +19,8 @@ suite("DomBuilderHelper", function domLite() {
         asr.deepEqual(dh.getAttrs({ attributes: attributes }, ["attr1", "attr2"]), { attr1: "A1", attr2: "2" });
     });
     test("getAttr*", function getAttrTest() {
-        var dh = new DomBuilderHelper(null, null);
-        var attributes = DomLite.createNamedNodeMap([
+        var dh = new DomBuilderHelper_1.DomBuilderHelper(null, null);
+        var attributes = DomLite_1.DomLite.createNamedNodeMap([
             { name: "attr1", value: "A1" },
             { name: "attr2", value: "2" },
             { name: "type", value: "123" },
@@ -50,8 +50,8 @@ suite("DomBuilderHelper", function domLite() {
         asr.throws(function () { return dh.getAttrInt({ attributes: attributes }, "null-end", undefined, true); });
     });
     test("addChilds/removeChilds", function addRemoveChilds() {
-        var dh = new DomBuilderHelper(null, null);
-        var creator = new DomBuilderFactory(new DomLite.DocLike(null, "html"));
+        var dh = new DomBuilderHelper_1.DomBuilderHelper(null, null);
+        var creator = new DomBuilderFactory_1.DomBuilderFactory(new DomLite_1.DomLite.DocLike(null, "html"));
         var ul = creator.create("ul").element;
         var lis = [
             creator.create("li").element,

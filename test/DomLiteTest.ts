@@ -1,5 +1,6 @@
-﻿import chai = require("chai");
-import DomLite = require("../dom/DomLite");
+﻿import * as chai from "chai";
+import * as JSDom from "jsdom";
+import { DomLite } from "../dom/DomLite";
 
 var asr = chai.assert;
 
@@ -143,6 +144,14 @@ suite("DomLite", function domLite() {
         asr.deepEqual(el.attributes.map((a) => a.value), ["123", "abc"]);
     });
 
+
+    test("attributes serializable", function attributesSerializableTest() {
+        const dom = new JSDom.JSDOM("", { contentType: "text/html" }).window.document;
+        const elem = dom.createElement("st");
+        elem.setAttribute("xml:space", " ");
+        dom.body.appendChild(elem);
+        asr.equal(elem.outerHTML, "<st xml:space=\" \"></st>");
+    });
 
     test("document-like", function documentLikeTest() {
         var doc = new DomLite.DocLike("zzz://some.url/a/path/", "sheet");

@@ -1,5 +1,9 @@
 "use strict";
-/** Helper functions for XMLDocument Node attributes and children
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomBuilderHelper = void 0;
+/** Helper functions for XMLDocument Node attributes and children.
+ * Includes a global {@link getParser} and {@link getSerializer} which default to {@link DOMParser} and {@link XMLSerializer},
+ * but can be overridden.
  * @since 2016-04-27
  */
 var DomBuilderHelper = /** @class */ (function () {
@@ -7,11 +11,29 @@ var DomBuilderHelper = /** @class */ (function () {
         this._dom = dom;
         this._validator = validator;
     }
+    /**
+     * @returns the last parser set by {@link setParser} or a default {@link DOMParser}
+     */
     DomBuilderHelper.getParser = function () {
         return DomBuilderHelper._parser != null ? DomBuilderHelper._parser : (DomBuilderHelper._parser = new DOMParser());
     };
+    /**
+     * @returns the last serializer set by {@link setSerializer} or a default {@link XMLSerializer}
+     */
     DomBuilderHelper.getSerializer = function () {
         return DomBuilderHelper._serializer != null ? DomBuilderHelper._serializer : (DomBuilderHelper._serializer = new XMLSerializer());
+    };
+    /**
+     * Set the default parser returned by {@link getParser}
+     */
+    DomBuilderHelper.setParser = function (parser) {
+        DomBuilderHelper._parser = parser;
+    };
+    /**
+     * Set the default serializer returned by {@link getSerializer}
+     */
+    DomBuilderHelper.setSerializer = function (serializer) {
+        DomBuilderHelper._serializer = serializer;
     };
     DomBuilderHelper.prototype.getParser = function () {
         return DomBuilderHelper._parser;
@@ -169,4 +191,4 @@ var DomBuilderHelper = /** @class */ (function () {
     DomBuilderHelper.parseBooleanLike = function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); };
     return DomBuilderHelper;
 }());
-module.exports = DomBuilderHelper;
+exports.DomBuilderHelper = DomBuilderHelper;

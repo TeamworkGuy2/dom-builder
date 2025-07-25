@@ -4,7 +4,17 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
-### [0.11.0](N/A) - 2022-01-02
+### [1.0.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.0.0) - 2025-07-25
+#### Changed
+Time to mark this package stable and v1!
+
+* BREAKING: update exports to use standard named exports rather than a default export object. This requires updating import statements from `import DomBuilderHelper from '@twg2/dom-builder/DomBuilderHelper';` to `import { DomBuilderHelper } from '@twg2/dom-builder/DomBuilderHelper';`, notice the parenthesis now required around the import type.
+* Add `namespaceURI` property to attributes and elements with logic to automatically detect namespaces
+* Update to TypeScript 4.9
+
+
+--------
+### [0.11.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v0.11.0) - 2022-01-02
 #### Changed
 * Update to TypeScript 4.4
 

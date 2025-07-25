@@ -1,43 +1,58 @@
 ﻿
-module DomLite {
+export module DomLite {
     var EMPTY_LIST = <NodeListLike & NodeLike[]>Object.freeze(createNodeList());
-
-
+    var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    var XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
+    
     export function createElement(qualifiedName: string) {
         return new ElemLike(qualifiedName, null);
     }
 
-
     export function createTextNode(data: string) {
         return new TextNodeLike(data);
     }
-
 
     export function createAttribute(qualifiedName: string, value: string | number | boolean | null, namespaceUri?: string | null) {
         return new AttrLike(qualifiedName, value, namespaceUri);
     }
 
 
-
     export class AttrLike implements AttributeLike {
         name: string;
         value: string;
-        ns: string | null;
+        localName?: string | undefined;
+        namespaceURI: string | null;
+        prefix?: string | null | undefined;
 
         constructor(qualifiedName: string, value: string | number | boolean | null, namespaceUri?: string | null) {
+            const colonIdx = qualifiedName.indexOf(":");
             this.name = qualifiedName;
+            this.namespaceURI = namespaceUri || null;
             this.value = "" + value;
-            this.ns = namespaceUri || null;
+            if (colonIdx > 0) {
+                this.localName = qualifiedName.substring(colonIdx + 1);
+                this.prefix = qualifiedName.substring(0, colonIdx);
+                // force overwrite the namespace URI if it's known
+                // the correct logic is:
+                // - check the 'prefix' against top level namespaces
+                // - check the 'prefix' against the namespace hierarchy of parent tags
+                // - 'xmlns' seems to correspond to the empty '' prefix,
+                //   i.e. nodes without a 'prefix' inherit the first 'xmlns' attribute of the parent tag hierarchy or the default XMLNS_NAMESPACE?
+                switch (this.prefix) {
+                    case 'xml':
+                        this.namespaceURI = XML_NAMESPACE;
+                        break;
+                    case 'xmlns':
+                        this.namespaceURI = XMLNS_NAMESPACE;
+                        break;
+                }
+            }
         }
-
     }
-
-
 
 
     export class DocLike implements DocumentLike {
         doc: ElementLike;
-
 
         constructor(ns: string | null, rootNodeName: string) {
             this.doc = this.createElement(rootNodeName);
@@ -46,26 +61,21 @@ module DomLite {
             }
         }
 
-
         public createAttribute(name: string) {
             return new AttrLike(name, null, null);
         }
-
 
         public createAttributeNS(namespaceUri: string | null, qualifiedName: string) {
             return new AttrLike(qualifiedName, null, namespaceUri);
         }
 
-
         public createElement(qualifiedName: string) {
             return new ElemLike(qualifiedName, null);
         }
 
-
         public createElementNS(namespaceUri: string | null, qualifiedName: string) {
             return new ElemLike(qualifiedName, namespaceUri);
         }
-
 
         public createTextNode(data: string) {
             var inst = new ElemLike(<string><any>null, null);
@@ -73,20 +83,17 @@ module DomLite {
             return inst;
         }
 
-
         public toString() {
             return this.doc.toString();
         }
-
     }
-
-
 
 
     export class ElemLike implements ElementLike {
         id: string = "";
         nodeName: string;
         nodeValue: string | null = null;
+        namespaceURI?: string | null;
         textContent: string | null = null;
         firstChild: NodeLike | null = null;
         lastChild: NodeLike | null = null;
@@ -95,11 +102,12 @@ module DomLite {
         _classList?: (DOMTokenList & string[]) | null;
         _style?: CSSStyleDeclaration | null;
 
-
         constructor(qualifiedName: string, namespaceUri?: string | null) {
             this.nodeName = qualifiedName;
+            if (namespaceUri) {
+                this.namespaceURI = namespaceUri;
+            }
         }
-
 
         public get attributes() {
             return this._attributes || (this._attributes = createNamedNodeMap());
@@ -117,7 +125,6 @@ module DomLite {
             return this._style || (this._style = createCssStyle());
         }
 
-
         public appendChild<T extends NodeLike>(newChild: T): T {
             var childs = this._childNodes = this._childNodes || createNodeList();
             childs.push(newChild);
@@ -127,7 +134,6 @@ module DomLite {
             this.lastChild = newChild;
             return newChild;
         }
-
 
         public removeChild<T extends NodeLike>(oldChild: T): T {
             var childs = this._childNodes;
@@ -151,30 +157,28 @@ module DomLite {
             throw new Error("The node to be removed is not a child of this node");
         }
 
-
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void {
             // do nothing
         }
 
-
         public setAttribute(name: string, value: any): void {
-            this.attributes.setNamedItem({ name, value });
+            this.attributes.setNamedItem(createAttribute(name, value, this.namespaceURI));
         }
-
 
         public setAttributeNS(namespaceURI: string | null, qualifiedName: string, value: any): void {
-            this.attributes.setNamedItem({ name: qualifiedName, value });
+            this.attributes.setNamedItemNS(createAttribute(qualifiedName, value, namespaceURI || this.namespaceURI));
         }
-
 
         public toString(indent?: string, currentIndent?: string | null) {
             var str = (currentIndent || "") + "<" + this.nodeName;
-            var attrs: string[] | null = (this._attributes != null ? [] : null);
-            for (var i = 0, size = this._attributes != null ? this._attributes.length : 0; i < size; i++) {
-                var attr = (<AttributeLike[]>this._attributes)[i];
-                (<string[]>attrs).push(attr.name + "=\"" + attr.value + "\"");
+            if (this._attributes != null) {
+                var attrs: string[] = [];
+                for (var i = 0, size = this._attributes.length; i < size; i++) {
+                    var attr = (<AttributeLike[]>this._attributes)[i];
+                    attrs.push(attr.name + "=\"" + attr.value + "\"");
+                }
+                str += (attrs.length > 0 ? " " + attrs.join(" ") : "");
             }
-            str += (attrs != null && attrs.length > 0 ? " " + attrs.join(" ") : "");
 
             var hasText = this.textContent != null && this.textContent.length > 0;
             size = this._childNodes != null ? this._childNodes.length : 0;
@@ -194,9 +198,8 @@ module DomLite {
             return str;
         }
 
-
         public cloneNode(deep?: boolean) {
-            var copy = new ElemLike(this.nodeName, null);
+            var copy = new ElemLike(this.nodeName, this.namespaceURI);
             copy.id = this.id;
             copy.nodeValue = this.nodeValue;
             copy.textContent = this.textContent;
@@ -208,10 +211,7 @@ module DomLite {
             copy.lastChild = copy._childNodes && copy._childNodes.length > 0 ? copy._childNodes[copy._childNodes.length - 1] : null;
             return copy;
         }
-
     }
-
-
 
 
     export class TextNodeLike implements NodeLike {
@@ -221,39 +221,31 @@ module DomLite {
         attributes: NamedNodeMapLike = <any>null;
         childNodes = EMPTY_LIST;
 
-
         constructor(data: string | null) {
             this.nodeName = "#text";
             this.nodeValue = data;
         }
 
-
         public appendChild<T extends ElementLike>(newChild: T): T {
             throw new Error("Child nodes cannot be appended to a Text node");
         }
-
 
         public removeChild<T extends ElementLike>(oldChild: T): T {
             throw new Error("Child nodes cannot be removed from a Text node");
         }
 
-
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void {
             // do nothing
         }
-
 
         public toString() {
             return this.nodeValue || "";
         }
 
-
         public cloneNode(deep?: boolean) {
             return new TextNodeLike(this.nodeValue);
         }
-
     }
-
 
 
     export function createCssStyle(copy?: CSSStyleDeclaration): CSSStyleDeclaration {
@@ -487,5 +479,3 @@ module DomLite {
     }
 
 }
-
-export = DomLite;

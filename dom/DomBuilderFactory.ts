@@ -1,5 +1,5 @@
-﻿import domBldr = require("dom-builder");
-import DomBuilder = require("./DomBuilder");
+﻿import { Builder, BuilderFactory } from "dom-builder";
+import { DomBuilder } from "./DomBuilder";
 
 /** A factory for creating DOM elements.
  * Includes methods for common DOM setup that requires a lot of native JS DOM code):
@@ -10,7 +10,7 @@ import DomBuilder = require("./DomBuilder");
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
-class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactory {
+export class DomBuilderFactory<D extends DocumentLike> implements BuilderFactory {
     private dom: DocumentLike;
 
 
@@ -21,7 +21,7 @@ class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactor
 
     /** Create an HTML <a> element
      */
-    public newLink(doc: Document, displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): domBldr.Builder<HTMLAnchorElement> {
+    public newLink(doc: Document, displayText: string, url: string, clickHandler?: (evt: MouseEvent) => any): Builder<HTMLAnchorElement> {
         var anchor = doc.createElement("a");
         anchor.text = displayText;
         anchor.href = url;
@@ -32,10 +32,10 @@ class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactor
     }
 
 
-    public create<P extends keyof HTMLElementTagNameMap>(elemName: P): domBldr.Builder<HTMLElementTagNameMap[P]>;
-    public create<T extends ElementLike>(elemName: string, namespace?: string): domBldr.Builder<T> {
+    public create<P extends keyof HTMLElementTagNameMap>(elemName: P): Builder<HTMLElementTagNameMap[P]>;
+    public create<T extends ElementLike>(elemName: string, namespace?: string): Builder<T> {
         var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
-        return <domBldr.Builder<any>>DomBuilder.newInst(elem, this.dom);
+        return DomBuilder.newInst(elem, this.dom) as Builder<any>;
     }
 
 
@@ -44,7 +44,7 @@ class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactor
      */
     public elementOrTextTo<E extends ElementLike>(textElementTypeName: string, textOrElem: string | E): E {
         if (typeof textOrElem === "string") {
-            var elem = <E>this.dom.createElement(textElementTypeName);
+            var elem = this.dom.createElement(textElementTypeName) as E;
             elem.textContent = textOrElem;
             return elem;
         }
@@ -73,5 +73,3 @@ class DomBuilderFactory<D extends DocumentLike> implements domBldr.BuilderFactor
     }
 
 }
-
-export = DomBuilderFactory;

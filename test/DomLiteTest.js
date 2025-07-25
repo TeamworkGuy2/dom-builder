@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var chai = require("chai");
-var DomLite = require("../dom/DomLite");
+var JSDom = require("jsdom");
+var DomLite_1 = require("../dom/DomLite");
 var asr = chai.assert;
 suite("DomLite", function domLite() {
-    var newAttr = DomLite.createAttribute;
+    var newAttr = DomLite_1.DomLite.createAttribute;
     test("checkTypes", function checkTypesTest() {
         var doc = null; // document
         var docm = doc;
@@ -15,7 +16,7 @@ suite("DomLite", function domLite() {
         var nodeList = doc && doc.childNodes;
     });
     test("textNode", function textNodeTest() {
-        var txt = DomLite.createTextNode("abc");
+        var txt = DomLite_1.DomLite.createTextNode("abc");
         asr.equal(txt.nodeValue, "abc");
         asr.isNull(txt.attributes);
         asr.throws(function () { return txt.appendChild(null); });
@@ -27,26 +28,26 @@ suite("DomLite", function domLite() {
         asr.equal(txt3.nodeValue, "abc");
     });
     test("createElement/appendChild", function elementTest() {
-        var elem = DomLite.createElement("div");
+        var elem = DomLite_1.DomLite.createElement("div");
         asr.equal(elem.nodeName, "div");
         asr.equal(elem.childNodes.length, 0);
-        var ch1 = DomLite.createElement("span");
+        var ch1 = DomLite_1.DomLite.createElement("span");
         elem.appendChild(ch1);
         asr.equal(elem.childNodes.length, 1);
-        var ch2 = DomLite.createElement("a");
+        var ch2 = DomLite_1.DomLite.createElement("a");
         elem.appendChild(ch2);
         asr.equal(elem.childNodes.length, 2);
     });
     test("toString/XML/HTML", function toStringTest() {
-        var elem = DomLite.createElement("section");
+        var elem = DomLite_1.DomLite.createElement("section");
         elem.textContent = "abc";
         asr.equal(elem.toString(), "<section>abc</section>");
-        var ch1 = DomLite.createElement("div");
-        var chch1 = DomLite.createElement("span");
+        var ch1 = DomLite_1.DomLite.createElement("div");
+        var chch1 = DomLite_1.DomLite.createElement("span");
         chch1.textContent = "nested";
         ch1.appendChild(chch1);
         elem.appendChild(ch1);
-        var txt1 = DomLite.createTextNode("end!");
+        var txt1 = DomLite_1.DomLite.createTextNode("end!");
         elem.appendChild(txt1);
         asr.equal(elem.toString(), "<section>abc<div><span>nested</span></div>end!</section>");
         asr.equal(elem.toString("  "), "<section>abc\n" +
@@ -57,7 +58,7 @@ suite("DomLite", function domLite() {
             "</section>");
     });
     test("classList", function classListTest() {
-        var el = DomLite.createElement("div");
+        var el = DomLite_1.DomLite.createElement("div");
         var cl = el.classList;
         cl.add("class-1");
         cl.add("class-2", "class-3");
@@ -80,7 +81,7 @@ suite("DomLite", function domLite() {
         asr.equal(cl.item(0), "class-1");
     });
     test("cssStyles", function cssStylesTest() {
-        var el = DomLite.createElement("div");
+        var el = DomLite_1.DomLite.createElement("div");
         var st = el.style;
         st.zIndex = "123";
         st.backgroundColor = "#999";
@@ -90,7 +91,7 @@ suite("DomLite", function domLite() {
         asr.equal(st.item(1), "#999");
     });
     test("attributes", function attributesTest() {
-        var el = DomLite.createElement("div");
+        var el = DomLite_1.DomLite.createElement("div");
         var attrs = el.attributes;
         var attr1 = newAttr("a1", 123);
         asr.isNull(attrs.getNamedItem("a1"));
@@ -106,17 +107,24 @@ suite("DomLite", function domLite() {
     test("attributes enumerable", function attributesEnumerableTest() {
         var attr1 = newAttr("a1", 123);
         var attr2 = newAttr("a2", "abc");
-        var attrs = DomLite.createNamedNodeMap();
+        var attrs = DomLite_1.DomLite.createNamedNodeMap();
         attrs.setNamedItem(attr1);
         attrs.setNamedItem(attr2);
-        var el = DomLite.createElement("div");
+        var el = DomLite_1.DomLite.createElement("div");
         el.attributes.setNamedItem(attr1);
         el.setAttribute(attr2.name, attr2.value);
         asr.deepEqual(Object.keys(el.attributes), ["0", "1"]);
         asr.deepEqual(el.attributes.map(function (a) { return a.value; }), ["123", "abc"]);
     });
+    test("attributes serializable", function attributesSerializableTest() {
+        var dom = new JSDom.JSDOM("", { contentType: "text/html" }).window.document;
+        var elem = dom.createElement("st");
+        elem.setAttribute("xml:space", " ");
+        dom.body.appendChild(elem);
+        asr.equal(elem.outerHTML, "<st xml:space=\" \"></st>");
+    });
     test("document-like", function documentLikeTest() {
-        var doc = new DomLite.DocLike("zzz://some.url/a/path/", "sheet");
+        var doc = new DomLite_1.DomLite.DocLike("zzz://some.url/a/path/", "sheet");
         var r1 = doc.createElement("row");
         var r2 = r1.cloneNode(true);
         var c11 = doc.createElement("cell");

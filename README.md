@@ -1,6 +1,8 @@
 TypeScript DOM Builder
 ==============
 
+npm: [`@twg2/dom-builder`](https://www.npmjs.com/package/@twg2/dom-builder)
+
 Dependencies:
 none
 
@@ -19,9 +21,9 @@ var div = creator.create('div')
 
 #### `dom-builder` has a simple virtual DOM implementation for use in non-browser environments:
 ```ts
-var DomLite = require('.../DomLite');
+import { DomLite } from '@twg2/dom-builder/dom/DomLite';
 var creator = new DomBuilderFactory(new DomLite.DocLike('http://an.xml/namespace/schema', 'root-element'));
-// creator.create(...) will return virtual elements, useful for cases like building XLSX/ODF XML documents server side
+// creator.create(...) will return virtual elements, useful for cases like building XLSX/ODF XML documents in Node.js
 ```
 
 

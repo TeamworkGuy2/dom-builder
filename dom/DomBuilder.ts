@@ -1,4 +1,4 @@
-﻿import domBldr = require("dom-builder");
+﻿import { Builder } from "dom-builder";
 
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Reduces the code required to create and setup a new element for insertion into a Document.
@@ -7,7 +7,7 @@
  * @author TeamworkGuy2
  * @since 2016-04-26
  */
-class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBldr.Builder<T> {
+export class DomBuilder<T extends ElementLike, D extends DocumentLike> implements Builder<T> {
     public element: T;
     public dom: D;
 
@@ -24,12 +24,12 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
             for (var i = 0, size = classNames.length; i < size; i++) {
                 var clsName = classNames[i];
                 if (clsName != null) {
-                    (<DOMTokenList>clsList).add(clsName);
+                    (clsList as DOMTokenList).add(clsName);
                 }
             }
         }
         else if (classNames != null) {
-            (<DOMTokenList>clsList).add(classNames);
+            (clsList as DOMTokenList).add(classNames);
         }
         return this;
     }
@@ -51,7 +51,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
             for (var i = 0, size = keys.length; i < size; i++) {
                 var style = styles[keys[i]];
                 if (!skipNulls || style != null) {
-                    (<CSSStyleDeclaration>elemStyle)[<number><any>keys[i]] = <string>style;
+                    (elemStyle as CSSStyleDeclaration)[keys[i] as any] = style as string;
                 }
             }
         }
@@ -61,7 +61,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
     public style(name: string, value: string | number | boolean | null | undefined, skipNull?: boolean): this {
         if (!skipNull || value != null) {
-            (<CSSStyleDeclaration>this.element.style)[<number><any>name] = <string>(value ? String(value) : value);
+            (this.element.style as CSSStyleDeclaration)[name as any] = (value ? String(value) : value) as string;
         }
         return this;
     }
@@ -73,7 +73,7 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
         var elem = this.element;
 
         if (attrs) {
-            var attrsMap = <{ [name: string]: string | number | boolean | null | undefined }>attrs;
+            var attrsMap: { [name: string]: string | number | boolean | null | undefined } = attrs;
             for (var key in attrsMap) {
                 var attrVal = attrsMap[key];
                 if (Object.prototype.hasOwnProperty.call(attrsMap, key) && (!skipNulls || attrVal != null)) {
@@ -107,19 +107,28 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
     private _attr(name: string, value: string | null | undefined, skipNull?: boolean): this {
         if (!skipNull || value != null) {
-            this.element.setAttribute(name, value);
+            var colonIdx = name.indexOf(':');
+            if (colonIdx > 0) {
+                this.element.setAttributeNS(this.element.namespaceURI as string, name, value);
+            }
+            if (this.element.namespaceURI) {
+                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+            }
+            else {
+                this.element.setAttribute(name, value);
+            }
         }
         return this;
     }
 
 
     public text(textContent: string | number | boolean | null | undefined): this {
-        this.element.textContent = <string><any>(textContent ? String(textContent) : textContent);
+        this.element.textContent = (textContent ? String(textContent) : textContent) as string;
         return this;
     }
 
 
-    public addChild<S extends ElementLike>(elems: S | S[] | domBldr.Builder<S> | domBldr.Builder<S>[]): this {
+    public addChild<S extends ElementLike>(elems: S | S[] | Builder<S> | Builder<S>[]): this {
         if (Array.isArray(elems)) {
             for (var i = 0, size = elems.length; i < size; i++) {
                 var el = elems[i];
@@ -134,11 +143,11 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
 
 
     public textOrChild(textOrElem: string | number | boolean | ElementLike): this {
-        if ((<ElementLike>textOrElem).nodeName) {
-            this.addChild(<ElementLike>textOrElem);
+        if ((textOrElem as ElementLike).nodeName) {
+            this.addChild(textOrElem as ElementLike);
         }
         else {
-            this.text(<string | number | boolean>textOrElem);
+            this.text(textOrElem as string | number | boolean);
         }
         return this;
     }
@@ -150,8 +159,8 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 
-    private static isDomBuilder<S extends ElementLike>(elem: S | domBldr.Builder<S>): elem is domBldr.Builder<S> {
-        return (<domBldr.Builder<S>>elem).textOrChild !== undefined && (<domBldr.Builder<S>>elem).attr !== undefined;
+    private static isDomBuilder<S extends ElementLike>(elem: S | Builder<S>): elem is Builder<S> {
+        return (elem as Builder<S>).textOrChild !== undefined && (elem as Builder<S>).attr !== undefined;
     }
 
 
@@ -162,5 +171,3 @@ class DomBuilder<T extends ElementLike, D extends DocumentLike> implements domBl
     }
 
 }
-
-export = DomBuilder;

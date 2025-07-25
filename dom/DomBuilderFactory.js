@@ -1,5 +1,7 @@
 "use strict";
-var DomBuilder = require("./DomBuilder");
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomBuilderFactory = void 0;
+var DomBuilder_1 = require("./DomBuilder");
 /** A factory for creating DOM elements.
  * Includes methods for common DOM setup that requires a lot of native JS DOM code):
  * - converting multi-line text strings to DOM text nodes with <br>'s via toTextWithLineBreaks()
@@ -22,11 +24,11 @@ var DomBuilderFactory = /** @class */ (function () {
         if (clickHandler) {
             anchor.addEventListener("click", clickHandler);
         }
-        return DomBuilder.newInst(anchor, this.dom);
+        return DomBuilder_1.DomBuilder.newInst(anchor, this.dom);
     };
     DomBuilderFactory.prototype.create = function (elemName, namespace) {
         var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
-        return DomBuilder.newInst(elem, this.dom);
+        return DomBuilder_1.DomBuilder.newInst(elem, this.dom);
     };
     /**
      * @param textElementTypeName: i.e. 'span', 'div', 'p', etc.
@@ -60,4 +62,4 @@ var DomBuilderFactory = /** @class */ (function () {
     };
     return DomBuilderFactory;
 }());
-module.exports = DomBuilderFactory;
+exports.DomBuilderFactory = DomBuilderFactory;
