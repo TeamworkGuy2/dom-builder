@@ -1,6 +1,6 @@
 {
   "name": "@twg2/dom-builder",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "TypeScript DOM builder utils, static helpers for element attributes and childNodes, and a virtual DOM implementation.",
   "author": "TeamworkGuy2",
   "homepage": "https://github.com/TeamworkGuy2/dom-builder",

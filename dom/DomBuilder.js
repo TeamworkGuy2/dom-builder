@@ -94,7 +94,7 @@ var DomBuilder = /** @class */ (function () {
                 }
                 this.element.setAttributeNS(namespaceURI, name, value);
             }
-            if (this.element.namespaceURI) {
+            else if (this.element.namespaceURI) {
                 this.element.setAttributeNS(this.element.namespaceURI, name, value);
             }
             else {

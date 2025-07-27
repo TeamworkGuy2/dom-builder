@@ -118,7 +118,7 @@ export class DomBuilder<T extends ElementLike, D extends DocumentLike> implement
                 }
                 this.element.setAttributeNS(namespaceURI, name, value);
             }
-            if (this.element.namespaceURI) {
+            else if (this.element.namespaceURI) {
                 this.element.setAttributeNS(this.element.namespaceURI, name, value);
             }
             else {

@@ -4,6 +4,12 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
+### [1.1.2](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.1.2) - 2025-07-26
+#### Fixed
+* Fix bug in `DomBuilder` set attribute logic that was causing `xml` prefixed attributes to be set twice
+
+
+--------
 ### [1.1.1](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.1.1) - 2025-07-26
 #### Fixed
 * Fix setting attributes in `DomBuilder` with `xml` namespaces
