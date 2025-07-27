@@ -1,4 +1,5 @@
 ﻿import { Builder } from "dom-builder";
+import { DomLite } from "./DomLite";
 
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Exposes a builder pattern to reduce the code required to create and setup a new element for
@@ -111,7 +112,11 @@ export class DomBuilder<T extends ElementLike, D extends DocumentLike> implement
         if (!skipNull || value != null) {
             var colonIdx = name.indexOf(':');
             if (colonIdx > 0) {
-                this.element.setAttributeNS(this.element.namespaceURI as string, name, value);
+                let namespaceURI = this.element.namespaceURI as unknown as string | null;
+                if (name.startsWith('xml:')) {
+                    namespaceURI = DomLite.XML_NAMESPACE;
+                }
+                this.element.setAttributeNS(namespaceURI, name, value);
             }
             if (this.element.namespaceURI) {
                 this.element.setAttributeNS(this.element.namespaceURI, name, value);

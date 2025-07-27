@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomBuilder = void 0;
+var DomLite_1 = require("./DomLite");
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Exposes a builder pattern to reduce the code required to create and setup a new element for
  * insertion into a Document.
@@ -87,7 +88,11 @@ var DomBuilder = /** @class */ (function () {
         if (!skipNull || value != null) {
             var colonIdx = name.indexOf(':');
             if (colonIdx > 0) {
-                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+                var namespaceURI = this.element.namespaceURI;
+                if (name.startsWith('xml:')) {
+                    namespaceURI = DomLite_1.DomLite.XML_NAMESPACE;
+                }
+                this.element.setAttributeNS(namespaceURI, name, value);
             }
             if (this.element.namespaceURI) {
                 this.element.setAttributeNS(this.element.namespaceURI, name, value);
