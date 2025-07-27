@@ -164,7 +164,9 @@ interface DomValidate {
     unexpectedNode(badNodeName: string, expectedNodeName?: string, parentNodeName?: string, idx?: number, size?: number): Error;
 }
 
-
+/**
+ * Basic functionality of a DOM {@link Attr}.
+ */
 interface AttributeLike {
     readonly name: string;
     value: string;
@@ -178,8 +180,11 @@ interface HasAttributes {
     attributes: NamedNodeMapLike;
 }
 
-
+/** Basic functions for creating DOM elements and attributes, like {@link Document}.
+ */
 interface DocumentLike {
+    lookupNamespaceURI(prefix: string | null): string | null;
+
     createAttribute(name: string): AttributeLike;
     createAttributeNS(namespaceURI: string | null, qualifiedName: string): AttributeLike;
 
@@ -190,7 +195,8 @@ interface DocumentLike {
     createTextNode(data: string): NodeLike;
 }
 
-
+/** Basic functionality of a DOM {@link Element}.
+ */
 interface ElementLike extends NodeLike {
     id: string;
     attributes: NamedNodeMapLike;
@@ -202,7 +208,8 @@ interface ElementLike extends NodeLike {
     setAttributeNS(namespaceURI: string | null, qualifiedName: string, value: any): void;
 }
 
-
+/** Basic functionality of a {@link NamedNodeMap}.
+ */
 interface NamedNodeMapLike {
     readonly length: number;
     [index: number]: AttributeLike;
@@ -219,7 +226,8 @@ interface NamedNodeMapLike {
     setNamedItemNS(arg: AttributeLike): AttributeLike | null;
 }
 
-
+/** Basic functionality of a DOM {@link Node}.
+ */
 interface NodeLike {
     nodeName: string;
     nodeValue: string | null;

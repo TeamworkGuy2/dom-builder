@@ -1,11 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomLite = void 0;
+/**
+ * Contains very basic implementations of DOM elements:
+ * - {@link DocLike}
+ * - {@link ElemLike}
+ * - {@link AttrLike}
+ * - {@link TextNodeLike}
+ */
 var DomLite;
 (function (DomLite) {
+    DomLite.XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    DomLite.XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
     var EMPTY_LIST = Object.freeze(createNodeList());
-    var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
-    var XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
     function createElement(qualifiedName) {
         return new ElemLike(qualifiedName, null);
     }
@@ -35,10 +42,10 @@ var DomLite;
                 //   i.e. nodes without a 'prefix' inherit the first 'xmlns' attribute of the parent tag hierarchy or the default XMLNS_NAMESPACE?
                 switch (this.prefix) {
                     case 'xml':
-                        this.namespaceURI = XML_NAMESPACE;
+                        this.namespaceURI = DomLite.XML_NAMESPACE;
                         break;
                     case 'xmlns':
-                        this.namespaceURI = XMLNS_NAMESPACE;
+                        this.namespaceURI = DomLite.XMLNS_NAMESPACE;
                         break;
                 }
             }
@@ -48,11 +55,22 @@ var DomLite;
     DomLite.AttrLike = AttrLike;
     var DocLike = /** @class */ (function () {
         function DocLike(ns, rootNodeName) {
-            this.doc = this.createElement(rootNodeName);
+            this.doc = new ElemLike(rootNodeName, ns);
             if (ns != null) {
                 this.doc.attributes.setNamedItem({ name: "xmlns", value: ns });
             }
         }
+        DocLike.prototype.lookupNamespaceURI = function (prefix) {
+            // TODO: this isn't correct, but close enough for 'xlsx-spec-utils' use case
+            // see https://developer.mozilla.org/en-US/docs/Web/API/Node/lookupNamespaceURI
+            switch (prefix) {
+                case 'xml':
+                    return DomLite.XML_NAMESPACE;
+                case 'xmlns':
+                    return DomLite.XMLNS_NAMESPACE;
+            }
+            return this.doc.namespaceURI || null;
+        };
         DocLike.prototype.createAttribute = function (name) {
             return new AttrLike(name, null, null);
         };

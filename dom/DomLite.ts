@@ -1,8 +1,15 @@
-﻿
+﻿/**
+ * Contains very basic implementations of DOM elements:
+ * - {@link DocLike}
+ * - {@link ElemLike}
+ * - {@link AttrLike}
+ * - {@link TextNodeLike}
+ */
 export module DomLite {
+    export var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    export var XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
+
     var EMPTY_LIST = <NodeListLike & NodeLike[]>Object.freeze(createNodeList());
-    var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
-    var XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
     
     export function createElement(qualifiedName: string) {
         return new ElemLike(qualifiedName, null);
@@ -55,10 +62,22 @@ export module DomLite {
         doc: ElementLike;
 
         constructor(ns: string | null, rootNodeName: string) {
-            this.doc = this.createElement(rootNodeName);
+            this.doc = new ElemLike(rootNodeName, ns);
             if (ns != null) {
                 (<NamedNodeMapLike>this.doc.attributes).setNamedItem({ name: "xmlns", value: ns });
             }
+        }
+
+        public lookupNamespaceURI(prefix: string | null) {
+            // TODO: this isn't correct, but close enough for 'xlsx-spec-utils' use case
+            // see https://developer.mozilla.org/en-US/docs/Web/API/Node/lookupNamespaceURI
+            switch (prefix) {
+                case 'xml':
+                    return XML_NAMESPACE;
+                case 'xmlns':
+                    return XMLNS_NAMESPACE;
+            }
+            return this.doc.namespaceURI || null;
         }
 
         public createAttribute(name: string) {

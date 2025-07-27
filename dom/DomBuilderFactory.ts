@@ -2,20 +2,23 @@
 import { DomBuilder } from "./DomBuilder";
 
 /** A factory for creating DOM elements.
- * Includes methods for common DOM setup that requires a lot of native JS DOM code):
- * - converting multi-line text strings to DOM text nodes with <br>'s via toTextWithLineBreaks()
- * - creating an <a> link with a url and click handler in on function call via newLink()
- * - take a string OR an HTMLElement argument and determine the type, if it's an HTMLElement return it as-is,
- *     else create an element containing the string as content and return the new element via elementOrTextTo()
+ * Includes helpers for common DOM elements that requires a lot of native JS DOM code:
+ * - {@link newLink} creating an <a> link with a url and click handler in on function call
+ * - {@link elementOrTextTo} take a string OR an HTMLElement argument and determine the type,
+ *    if it's an HTMLElement return it as-is, else create an element containing the string as content and
+ *    return the new element
+ * - {@link toTextWithLineBreaks} converting multi-line text strings to DOM text nodes with <br>'s
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
-export class DomBuilderFactory<D extends DocumentLike> implements BuilderFactory {
+export class DomBuilderFactory implements BuilderFactory {
     private dom: DocumentLike;
+    private namespaceURI: string | null;
 
 
-    constructor(dom: Document | DocumentLike) {
+    constructor(dom: Document | DocumentLike, namespaceURI?: string | null) {
         this.dom = dom;
+        this.namespaceURI = namespaceURI || null;
     }
 
 
@@ -34,7 +37,16 @@ export class DomBuilderFactory<D extends DocumentLike> implements BuilderFactory
 
     public create<P extends keyof HTMLElementTagNameMap>(elemName: P): Builder<HTMLElementTagNameMap[P]>;
     public create<T extends ElementLike>(elemName: string, namespace?: string): Builder<T> {
-        var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
+        var elem: ElementLike;
+        if (namespace != null) {
+            elem = this.dom.createElementNS(namespace, elemName);
+        }
+        else if (this.namespaceURI != null) {
+            elem = this.dom.createElementNS(this.namespaceURI, elemName);
+        }
+        else {
+            elem = this.dom.createElement(elemName);
+        }
         return DomBuilder.newInst(elem, this.dom) as Builder<any>;
     }
 
@@ -44,7 +56,13 @@ export class DomBuilderFactory<D extends DocumentLike> implements BuilderFactory
      */
     public elementOrTextTo<E extends ElementLike>(textElementTypeName: string, textOrElem: string | E): E {
         if (typeof textOrElem === "string") {
-            var elem = this.dom.createElement(textElementTypeName) as E;
+            var elem: E;
+            if (this.namespaceURI != null) {
+                elem = this.dom.createElementNS(this.namespaceURI, textElementTypeName) as E;
+            }
+            else {
+                elem = this.dom.createElement(textElementTypeName) as E;
+            }
             elem.textContent = textOrElem;
             return elem;
         }

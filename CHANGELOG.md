@@ -4,6 +4,17 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
+### [1.1.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.1.0) - 2025-07-26
+#### Changed
+* Add `lookupNamespaceURI()` to `DocumentLike` interface and `DocLike` implementation
+* `DomBuilderFactory` no longer takes a generic type argument
+* `DomBuilderFactory` constructor now supports `namespaceURI` argument which is passed to elements created in `create()` and `elementOrTextTo()`
+* Improve documentation
+
+#### Fixed
+* Correctly save namespaceURI in `DocLike` constructor
+
+--------
 ### [1.0.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.0.0) - 2025-07-25
 #### Changed
 Time to mark this package stable and v1!

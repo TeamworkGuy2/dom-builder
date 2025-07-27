@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomBuilderHelper = void 0;
 /** Helper functions for XMLDocument Node attributes and children.
- * Includes a global {@link getParser} and {@link getSerializer} which default to {@link DOMParser} and {@link XMLSerializer},
- * but can be overridden.
+ * Useful for manipulating existing elements.
+ * Includes a global {@link getParser} and {@link getSerializer} which default to {@link DOMParser}
+ * and {@link XMLSerializer}, and can be overridden with {@link setParser} and {@link setSerializer}.
  * @since 2016-04-27
  */
 var DomBuilderHelper = /** @class */ (function () {

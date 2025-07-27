@@ -3,17 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomBuilderFactory = void 0;
 var DomBuilder_1 = require("./DomBuilder");
 /** A factory for creating DOM elements.
- * Includes methods for common DOM setup that requires a lot of native JS DOM code):
- * - converting multi-line text strings to DOM text nodes with <br>'s via toTextWithLineBreaks()
- * - creating an <a> link with a url and click handler in on function call via newLink()
- * - take a string OR an HTMLElement argument and determine the type, if it's an HTMLElement return it as-is,
- *     else create an element containing the string as content and return the new element via elementOrTextTo()
+ * Includes helpers for common DOM elements that requires a lot of native JS DOM code:
+ * - {@link newLink} creating an <a> link with a url and click handler in on function call
+ * - {@link elementOrTextTo} take a string OR an HTMLElement argument and determine the type,
+ *    if it's an HTMLElement return it as-is, else create an element containing the string as content and
+ *    return the new element
+ * - {@link toTextWithLineBreaks} converting multi-line text strings to DOM text nodes with <br>'s
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
 var DomBuilderFactory = /** @class */ (function () {
-    function DomBuilderFactory(dom) {
+    function DomBuilderFactory(dom, namespaceURI) {
         this.dom = dom;
+        this.namespaceURI = namespaceURI || null;
     }
     /** Create an HTML <a> element
      */
@@ -27,7 +29,16 @@ var DomBuilderFactory = /** @class */ (function () {
         return DomBuilder_1.DomBuilder.newInst(anchor, this.dom);
     };
     DomBuilderFactory.prototype.create = function (elemName, namespace) {
-        var elem = namespace == null ? this.dom.createElement(elemName) : this.dom.createElementNS(namespace, elemName);
+        var elem;
+        if (namespace != null) {
+            elem = this.dom.createElementNS(namespace, elemName);
+        }
+        else if (this.namespaceURI != null) {
+            elem = this.dom.createElementNS(this.namespaceURI, elemName);
+        }
+        else {
+            elem = this.dom.createElement(elemName);
+        }
         return DomBuilder_1.DomBuilder.newInst(elem, this.dom);
     };
     /**
@@ -35,7 +46,13 @@ var DomBuilderFactory = /** @class */ (function () {
      */
     DomBuilderFactory.prototype.elementOrTextTo = function (textElementTypeName, textOrElem) {
         if (typeof textOrElem === "string") {
-            var elem = this.dom.createElement(textElementTypeName);
+            var elem;
+            if (this.namespaceURI != null) {
+                elem = this.dom.createElementNS(this.namespaceURI, textElementTypeName);
+            }
+            else {
+                elem = this.dom.createElement(textElementTypeName);
+            }
             elem.textContent = textOrElem;
             return elem;
         }
