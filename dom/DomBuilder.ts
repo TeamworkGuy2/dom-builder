@@ -1,5 +1,4 @@
 ﻿import { Builder } from "dom-builder";
-import { DomLite } from "./DomLite";
 
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Exposes a builder pattern to reduce the code required to create and setup a new element for
@@ -10,14 +9,16 @@ import { DomLite } from "./DomLite";
  * @author TeamworkGuy2
  * @since 2016-04-26
  */
-export class DomBuilder<T extends ElementLike, D extends DocumentLike> implements Builder<T> {
+export class DomBuilder<T extends ElementLike> implements Builder<T> {
     public element: T;
-    public dom: D;
+    public dom: DocumentLike;
+    private attributeNamespaceHandler: ((elem: T, qualifiedName: string) => string | null) | undefined;
 
 
-    constructor(elem: T, dom: D) {
+    constructor(elem: T, dom: DocumentLike, attributeNamespaceHandler: ((elem: T, qualifiedName: string) => string | null) | undefined) {
         this.element = elem;
         this.dom = dom;
+        this.attributeNamespaceHandler = attributeNamespaceHandler;
     }
 
 
@@ -108,18 +109,29 @@ export class DomBuilder<T extends ElementLike, D extends DocumentLike> implement
         return this._attr(name, skipEmptyOrNull && (value == null || value.length === 0) ? null : value, skipEmptyOrNull);
     }
 
+    /**
+     * Sets an attribute on this element. Attribute names with namespace prefixes
+     * are passed to the {@link attributeNamespaceHandler} to pick a namespace.
+     * If `attributeNamespaceHandler` returns a namespace it will be used to call `setAttributeNS()`,
+     * otherwise `setAttribute()` is called.
+     * @param name the name of the attribute the set
+     * @param value the value to set, null and undefined have no effect if `skipNull`
+     * is true. Setting the attribute is skipped and this function returns.
+     * If `skipNull` is fales or not provided, then null values are set.
+     * @param skipNull (optional) (default: false) true to skip
+     * setting the attribute if the `value` is null or undefined.
+     * @returns this DomBuilder instance
+     */
     private _attr(name: string, value: string | null | undefined, skipNull?: boolean): this {
         if (!skipNull || value != null) {
+            let namespaceUri: string | undefined | null = null;
             var colonIdx = name.indexOf(':');
             if (colonIdx > 0) {
-                let namespaceURI = this.element.namespaceURI as unknown as string | null;
-                if (name.startsWith('xml:')) {
-                    namespaceURI = DomLite.XML_NAMESPACE;
-                }
-                this.element.setAttributeNS(namespaceURI, name, value);
+                namespaceUri = this.attributeNamespaceHandler?.(this.element, name);
             }
-            else if (this.element.namespaceURI) {
-                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+
+            if (namespaceUri != null) {
+                this.element.setAttributeNS(namespaceUri, name, value);
             }
             else {
                 this.element.setAttribute(name, value);
@@ -171,8 +183,15 @@ export class DomBuilder<T extends ElementLike, D extends DocumentLike> implement
     }
 
 
-    public static newInst<U extends ElementLike>(elem: U, dom: DocumentLike, id?: string, classes?: string | string[], styles?: { [name: string]: string | number }) {
-        var inst = new DomBuilder(elem, dom);
+    public static newInst<U extends ElementLike>(
+        elem: U,
+        dom: DocumentLike,
+        attributeNamespaceHandler: ((elem: U, qualifiedName: string) => string | null) | undefined,
+        id?: string,
+        classes?: string | string[],
+        styles?: { [name: string]: string | number },
+    ) {
+        var inst = new DomBuilder(elem, dom, attributeNamespaceHandler);
         inst.id(id).classes(classes).styles(styles);
         return inst;
     }

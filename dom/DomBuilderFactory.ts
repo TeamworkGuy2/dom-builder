@@ -14,13 +14,25 @@ import { DomBuilder } from "./DomBuilder";
 export class DomBuilderFactory implements BuilderFactory {
     private dom: DocumentLike;
     private namespaceURI: string | null;
+    private attributeNamespaceHandler: ((elem: ElementLike, qualifiedName: string) => string | null) | undefined;
 
-
-    constructor(dom: Document | DocumentLike, namespaceURI?: string | null) {
+    /**
+     * Create a factory based on the given 'dom'
+     * @param dom a {@link Document} or {@link DocumentLike} that this factory will be based on
+     * @param namespaceURI optional namespace to assign to elements created by this factory.
+     * If this is provided, elements will be created using `dom.createElementNS()`.
+     * @param attributeNamespaceHandler optional handler to lookup and handle namespaces for attributes
+     * set with prefixed qualified names
+     */
+    constructor(
+        dom: Document | DocumentLike,
+        namespaceURI?: string | null,
+        attributeNamespaceHandler?: ((elem: ElementLike, qualifiedName: string) => string | null) | undefined
+    ) {
         this.dom = dom;
         this.namespaceURI = namespaceURI || null;
+        this.attributeNamespaceHandler = attributeNamespaceHandler;
     }
-
 
     /** Create an HTML <a> element
      */
@@ -31,11 +43,11 @@ export class DomBuilderFactory implements BuilderFactory {
         if (clickHandler) {
             anchor.addEventListener("click", clickHandler);
         }
-        return DomBuilder.newInst(anchor, this.dom);
+        return DomBuilder.newInst(anchor, this.dom, this.attributeNamespaceHandler);
     }
 
-
     public create<P extends keyof HTMLElementTagNameMap>(elemName: P): Builder<HTMLElementTagNameMap[P]>;
+    public create<T extends ElementLike>(elemName: string, namespace?: string): Builder<T>;
     public create<T extends ElementLike>(elemName: string, namespace?: string): Builder<T> {
         var elem: ElementLike;
         if (namespace != null) {
@@ -47,9 +59,8 @@ export class DomBuilderFactory implements BuilderFactory {
         else {
             elem = this.dom.createElement(elemName);
         }
-        return DomBuilder.newInst(elem, this.dom) as Builder<any>;
+        return DomBuilder.newInst(elem, this.dom, this.attributeNamespaceHandler) as Builder<any>;
     }
-
 
     /**
      * @param textElementTypeName: i.e. 'span', 'div', 'p', etc.
@@ -71,7 +82,6 @@ export class DomBuilderFactory implements BuilderFactory {
         }
     }
 
-
     /** Transform an array of strings into an array of DOM nodes with <br> elements between each line
      */
     public toTextWithLineBreaks(lines: string[]): NodeLike[] {
@@ -89,5 +99,4 @@ export class DomBuilderFactory implements BuilderFactory {
         }
         return lineElems;
     }
-
 }

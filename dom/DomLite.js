@@ -54,10 +54,11 @@ var DomLite;
     }());
     DomLite.AttrLike = AttrLike;
     var DocLike = /** @class */ (function () {
-        function DocLike(ns, rootNodeName) {
-            this.doc = new ElemLike(rootNodeName, ns);
+        function DocLike(ns, rootNodeName, contentType) {
+            this.documentElement = new ElemLike(rootNodeName, ns);
+            this.contentType = contentType;
             if (ns != null) {
-                this.doc.attributes.setNamedItem({ name: "xmlns", value: ns });
+                this.documentElement.attributes.setNamedItem({ name: "xmlns", value: ns });
             }
         }
         DocLike.prototype.lookupNamespaceURI = function (prefix) {
@@ -69,7 +70,7 @@ var DomLite;
                 case 'xmlns':
                     return DomLite.XMLNS_NAMESPACE;
             }
-            return this.doc.namespaceURI || null;
+            return this.documentElement.namespaceURI || null;
         };
         DocLike.prototype.createAttribute = function (name) {
             return new AttrLike(name, null, null);
@@ -89,7 +90,7 @@ var DomLite;
             return inst;
         };
         DocLike.prototype.toString = function () {
-            return this.doc.toString();
+            return this.documentElement.toString();
         };
         return DocLike;
     }());

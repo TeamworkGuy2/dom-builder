@@ -13,9 +13,18 @@ var DomBuilder_1 = require("./DomBuilder");
  * @since 2016-04-25
  */
 var DomBuilderFactory = /** @class */ (function () {
-    function DomBuilderFactory(dom, namespaceURI) {
+    /**
+     * Create a factory based on the given 'dom'
+     * @param dom a {@link Document} or {@link DocumentLike} that this factory will be based on
+     * @param namespaceURI optional namespace to assign to elements created by this factory.
+     * If this is provided, elements will be created using `dom.createElementNS()`.
+     * @param attributeNamespaceHandler optional handler to lookup and handle namespaces for attributes
+     * set with prefixed qualified names
+     */
+    function DomBuilderFactory(dom, namespaceURI, attributeNamespaceHandler) {
         this.dom = dom;
         this.namespaceURI = namespaceURI || null;
+        this.attributeNamespaceHandler = attributeNamespaceHandler;
     }
     /** Create an HTML <a> element
      */
@@ -26,7 +35,7 @@ var DomBuilderFactory = /** @class */ (function () {
         if (clickHandler) {
             anchor.addEventListener("click", clickHandler);
         }
-        return DomBuilder_1.DomBuilder.newInst(anchor, this.dom);
+        return DomBuilder_1.DomBuilder.newInst(anchor, this.dom, this.attributeNamespaceHandler);
     };
     DomBuilderFactory.prototype.create = function (elemName, namespace) {
         var elem;
@@ -39,7 +48,7 @@ var DomBuilderFactory = /** @class */ (function () {
         else {
             elem = this.dom.createElement(elemName);
         }
-        return DomBuilder_1.DomBuilder.newInst(elem, this.dom);
+        return DomBuilder_1.DomBuilder.newInst(elem, this.dom, this.attributeNamespaceHandler);
     };
     /**
      * @param textElementTypeName: i.e. 'span', 'div', 'p', etc.

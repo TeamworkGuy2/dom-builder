@@ -59,12 +59,14 @@ export module DomLite {
 
 
     export class DocLike implements DocumentLike {
-        doc: ElementLike;
+        readonly documentElement: ElementLike;
+        readonly contentType: string;
 
-        constructor(ns: string | null, rootNodeName: string) {
-            this.doc = new ElemLike(rootNodeName, ns);
+        constructor(ns: string | null, rootNodeName: string, contentType: string) {
+            this.documentElement = new ElemLike(rootNodeName, ns);
+            this.contentType = contentType;
             if (ns != null) {
-                (<NamedNodeMapLike>this.doc.attributes).setNamedItem({ name: "xmlns", value: ns });
+                (<NamedNodeMapLike>this.documentElement.attributes).setNamedItem({ name: "xmlns", value: ns });
             }
         }
 
@@ -77,7 +79,7 @@ export module DomLite {
                 case 'xmlns':
                     return XMLNS_NAMESPACE;
             }
-            return this.doc.namespaceURI || null;
+            return this.documentElement.namespaceURI || null;
         }
 
         public createAttribute(name: string) {
@@ -103,7 +105,7 @@ export module DomLite {
         }
 
         public toString() {
-            return this.doc.toString();
+            return this.documentElement.toString();
         }
     }
 

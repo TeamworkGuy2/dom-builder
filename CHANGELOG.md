@@ -4,6 +4,16 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
+### [1.2.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.2.0) - 2025-07-29
+#### Changed
+* `DomLite.DocLike` constructor requires a third `contentType` argument (this could be considered a breaking change)
+* `DomBuilder` class now takes one generic type argument, the element type it produces. The document type is assumed to be `DocumentLike` (this could be considered a breaking change).
+* Added `documentElement` and `contentType` to `DocumentLike` interface and `DomLite.DocLike` implementation
+* `DomBuilder` constructor and static `newInst()` function takes a third argument `attributeNamespaceHandler` which can be null/undefined. This handler is responsible for namespace URI lookup and handling on the document when an attribute is set with a qualifying name starting with a `prefix:`. This allows callers to control namespace handling.
+* `DomBuilderFactory` constructor takes optional third argument `attributeNamespaceHandler` which is passed to the `DomBuilder` created for the factory, see bullet point above for purpose of this argument
+
+
+--------
 ### [1.1.2](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.1.2) - 2025-07-26
 #### Fixed
 * Fix bug in `DomBuilder` set attribute logic that was causing `xml` prefixed attributes to be set twice

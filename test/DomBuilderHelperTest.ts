@@ -60,7 +60,7 @@ suite("DomBuilderHelper", function domLite() {
 
     test("addChilds/removeChilds", function addRemoveChilds() {
         var dh = new DomBuilderHelper(<any>null, <any>null);
-        var creator = new DomBuilderFactory(new DomLite.DocLike(null, "html"));
+        var creator = new DomBuilderFactory(new DomLite.DocLike(null, "html", "text/html"));
 
         var ul = creator.create("ul").element;
         var lis = [

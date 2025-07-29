@@ -145,16 +145,30 @@ suite("DomLite", function domLite() {
     });
 
 
-    test("attributes serializable", function attributesSerializableTest() {
-        const dom = new JSDom.JSDOM("", { contentType: "text/html" }).window.document;
-        const elem = dom.createElement("st");
+    test("attributes serializable (HTML)", function attributesSerializableHtmlTest() {
+        const dom = new JSDom.JSDOM(
+            "",
+            { contentType: "text/html" }
+        ).window.document;
+        const elem = dom.createElement("s");
         elem.setAttribute("xml:space", " ");
         dom.body.appendChild(elem);
-        asr.equal(elem.outerHTML, "<st xml:space=\" \"></st>");
+        asr.equal(elem.outerHTML, "<s xml:space=\" \"></s>");
+    });
+
+    test("attributes serializable (XML)", function attributesSerializableXmlTest() {
+        const dom = new JSDom.JSDOM(
+            "<?xml version=\"1.0\"?>\n<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"></sst>",
+            { contentType: "text/xml" }
+        ).window.document;
+        const elem = dom.createElement("s");
+        elem.setAttributeNS(DomLite.XML_NAMESPACE, "xml:space", " ");
+        dom.childNodes[0].appendChild(elem);
+        asr.equal(elem.outerHTML, "<s xml:space=\" \"/>");
     });
 
     test("document-like", function documentLikeTest() {
-        var doc = new DomLite.DocLike("zzz://some.url/a/path/", "sheet");
+        var doc = new DomLite.DocLike("zzz://some.url/a/path/", "sheet", "text/xml");
         var r1 = doc.createElement("row");
         var r2 = r1.cloneNode(true);
         var c11 = doc.createElement("cell");
@@ -163,8 +177,8 @@ suite("DomLite", function domLite() {
         var c22 = c21.cloneNode(true);
         r2.appendChild(c21);
         r2.appendChild(c22);
-        doc.doc.appendChild(r1);
-        doc.doc.appendChild(r2);
+        doc.documentElement.appendChild(r1);
+        doc.documentElement.appendChild(r2);
 
         c11.textContent = "abc";
         c11.attributes.setNamedItem(newAttr("ref", "r1c1"));

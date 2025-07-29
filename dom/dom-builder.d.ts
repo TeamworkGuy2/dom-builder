@@ -183,6 +183,11 @@ interface HasAttributes {
 /** Basic functions for creating DOM elements and attributes, like {@link Document}.
  */
 interface DocumentLike {
+    /** The document's content type */
+    readonly contentType: string;
+    /** Reference to the root node of the document */
+    readonly documentElement: ElementLike;
+
     lookupNamespaceURI(prefix: string | null): string | null;
 
     createAttribute(name: string): AttributeLike;

@@ -51,7 +51,7 @@ suite("DomBuilderHelper", function domLite() {
     });
     test("addChilds/removeChilds", function addRemoveChilds() {
         var dh = new DomBuilderHelper_1.DomBuilderHelper(null, null);
-        var creator = new DomBuilderFactory_1.DomBuilderFactory(new DomLite_1.DomLite.DocLike(null, "html"));
+        var creator = new DomBuilderFactory_1.DomBuilderFactory(new DomLite_1.DomLite.DocLike(null, "html", "text/html"));
         var ul = creator.create("ul").element;
         var lis = [
             creator.create("li").element,

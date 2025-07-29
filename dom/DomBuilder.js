@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomBuilder = void 0;
-var DomLite_1 = require("./DomLite");
 /** A wrapper for a DOM element (similar to how a JQuery object wraps one or more DOM elements).
  * Exposes a builder pattern to reduce the code required to create and setup a new element for
  * insertion into a Document.
@@ -12,9 +11,10 @@ var DomLite_1 = require("./DomLite");
  * @since 2016-04-26
  */
 var DomBuilder = /** @class */ (function () {
-    function DomBuilder(elem, dom) {
+    function DomBuilder(elem, dom, attributeNamespaceHandler) {
         this.element = elem;
         this.dom = dom;
+        this.attributeNamespaceHandler = attributeNamespaceHandler;
     }
     DomBuilder.prototype.classes = function (classNames) {
         var clsList = this.element.classList;
@@ -84,18 +84,29 @@ var DomBuilder = /** @class */ (function () {
     DomBuilder.prototype.attrString = function (name, value, skipEmptyOrNull) {
         return this._attr(name, skipEmptyOrNull && (value == null || value.length === 0) ? null : value, skipEmptyOrNull);
     };
+    /**
+     * Sets an attribute on this element. Attribute names with namespace prefixes
+     * are passed to the {@link attributeNamespaceHandler} to pick a namespace.
+     * If `attributeNamespaceHandler` returns a namespace it will be used to call `setAttributeNS()`,
+     * otherwise `setAttribute()` is called.
+     * @param name the name of the attribute the set
+     * @param value the value to set, null and undefined have no effect if `skipNull`
+     * is true. Setting the attribute is skipped and this function returns.
+     * If `skipNull` is fales or not provided, then null values are set.
+     * @param skipNull (optional) (default: false) true to skip
+     * setting the attribute if the `value` is null or undefined.
+     * @returns this DomBuilder instance
+     */
     DomBuilder.prototype._attr = function (name, value, skipNull) {
+        var _a;
         if (!skipNull || value != null) {
+            var namespaceUri = null;
             var colonIdx = name.indexOf(':');
             if (colonIdx > 0) {
-                var namespaceURI = this.element.namespaceURI;
-                if (name.startsWith('xml:')) {
-                    namespaceURI = DomLite_1.DomLite.XML_NAMESPACE;
-                }
-                this.element.setAttributeNS(namespaceURI, name, value);
+                namespaceUri = (_a = this.attributeNamespaceHandler) === null || _a === void 0 ? void 0 : _a.call(this, this.element, name);
             }
-            else if (this.element.namespaceURI) {
-                this.element.setAttributeNS(this.element.namespaceURI, name, value);
+            if (namespaceUri != null) {
+                this.element.setAttributeNS(namespaceUri, name, value);
             }
             else {
                 this.element.setAttribute(name, value);
@@ -136,8 +147,8 @@ var DomBuilder = /** @class */ (function () {
     DomBuilder.isDomBuilder = function (elem) {
         return elem.textOrChild !== undefined && elem.attr !== undefined;
     };
-    DomBuilder.newInst = function (elem, dom, id, classes, styles) {
-        var inst = new DomBuilder(elem, dom);
+    DomBuilder.newInst = function (elem, dom, attributeNamespaceHandler, id, classes, styles) {
+        var inst = new DomBuilder(elem, dom, attributeNamespaceHandler);
         inst.id(id).classes(classes).styles(styles);
         return inst;
     };

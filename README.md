@@ -26,6 +26,30 @@ var creator = new DomBuilderFactory(new DomLite.DocLike('http://an.xml/namespace
 // creator.create(...) will return virtual elements, useful for cases like building XLSX/ODF XML documents in Node.js
 ```
 
+#### JSDOM virtual DOM
+[JSDOM](https://github.com/jsdom/jsdom) is a feature full virtual DOM implementation in non-browser environments:
+```ts
+import * as JSDom from "jsdom";
+
+const dom = new JSDom.JSDOM("<?xml version=\"1.0\"?><root ...></root>", { contentType: "text/xml" }).window.document;
+```
+
+You can also override [`DomBuilderHelper`](dom/DomBuilderHelper.ts) `getParser()` and `getSerializer()` to use JSDOM like this:
+```ts
+DomBuilderHelper.setParser({
+  parseFromString: (html, type) => {
+    const jsdom = new JSDom.JSDOM(html, { contentType: type || "text/xml" });
+    return jsdom.window.document;
+  }
+});
+
+DomBuilderHelper.setSerializer({
+  serializeToString: (root) => {
+    return root.documentElement.outerHTML;
+  }
+});
+```
+
 
 ## Examples:
 #### Build and append an element to the DOM using a DomBuilder
@@ -59,4 +83,37 @@ helper.attrInt(element.attributes, 'my-id', 54); // set the 'my-id' attribute of
 var attrValue = helper.attrInt(element.attributes, 'my-id'); // get the 'my-id' attribute from the element and convert it to an integer
 console.log('my-id = ' + attrValue + " (" + (typeof attrValue) + ")");
 // > my-id = 54 (number)
+```
+
+#### JSDOM to create and serialize XML
+```ts
+var xmlnsUri = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+var doc = new JSDom.JSDOM(
+  `<?xml version="1.0"?>\n<sst xmlns="${xmlnsUri}"></sst>`,
+  { contentType: "text/xml" }
+).window.document;
+var elem = doc.createElementNS(xmlnsUri, 's');
+doc.documentElement.appendChild(elem);
+console.log(doc.documentElement.outerHTML);
+```
+
+Result
+```xml
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><s/></sst>
+```
+
+#### Browser DOMParser and XMLSerializer to create and serialize XML
+```ts
+var xmlnsUri = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+var doc = new DOMParser().parseFromString(`<?xml version="1.0"?>\n<sst xmlns="${xmlnsUri}"></sst>`, "application/xml")
+var elem = doc.createElementNS(xmlnsUri, 's');
+doc.documentElement.appendChild(elem);
+var xmlStr = new XMLSerializer().serializeToString(doc);
+console.log(xmlStr);
+```
+
+Result
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><s/></sst>
 ```
