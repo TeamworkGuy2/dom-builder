@@ -25,12 +25,12 @@ suite("DomBuilder", function domBuilder() {
         );
     });
 
-    test("create w/ lookupAndAddNamespace", function createWithNamespacesTest() {
+    test("create w/ namespaceHandler", function createWithNamespaceHandlerTest() {
         const dom = new JSDom.JSDOM(
             "<?xml version=\"1.0\"?>\n<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"></sst>",
             { contentType: "text/xml" }
         ).window.document;
-        const domBldr = new DomBuilderFactory(dom, null, (elem, name) => mockLookupAndAddNamespace(dom, elem, name));
+        const domBldr = new DomBuilderFactory(dom, null, (elem, name) => mockNamespaceHandler(dom, elem, name));
         // element with multiple attributes with namespaces to test the DomBuilderFactory's lookupAndAddNamespace()
         const elem = domBldr.create('s')
             .attrBool('xml:space', true, true, '1', '0')
@@ -52,7 +52,7 @@ const namespaces: Record<string, string> = {
     "xr": "http://schemas.microsoft.com/office/spreadsheetml/2014/revision",
 };
 
-function mockLookupAndAddNamespace(document: DocumentLike, element: ElementLike, qualifiedName: string): string | null {
+function mockNamespaceHandler(document: DocumentLike, element: ElementLike, qualifiedName: string): string | null {
     const colonIdx = qualifiedName.indexOf(':');
     let namespaceUri: string | null = null;
     if (qualifiedName.startsWith('xml:')) {

@@ -4,6 +4,12 @@ This project does its best to adhere to [Semantic Versioning](http://semver.org/
 
 
 --------
+### [1.2.1](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.2.1) - 2025-08-03
+#### Fixed
+* Fix bug in `DomBuilderHelper.parseBooleanLike` to properly parse `true` and `false` string values
+
+
+--------
 ### [1.2.0](https://github.com/TeamworkGuy2/dom-builder/releases/tag/v1.2.0) - 2025-07-29
 #### Changed
 * `DomLite.DocLike` constructor requires a third `contentType` argument (this could be considered a breaking change)

@@ -1,7 +1,8 @@
 ﻿
-/** A wrapper for an HTMLElement with chainable functions for manipulating the underlying HTMLElement.
- * For example, adding 'class' names the the element is just 'domBldr.classes("...")'.
- * And once the HTMLElement is setup, use the 'element' property to retrieve it
+/** A Builder pattern wrapper for {@link ElementLike} with chainable functions
+ * for manipulating the underlying HTMLElement.
+ * For example, add 'class' names the the element via `domBldr.classes("...")`.
+ * Access the wrapped {@link Element} at any time use the `.element` property
  * @author TeamworkGuy2
  * @since 2016-04-25
  */
@@ -40,7 +41,8 @@ interface DomBuilder<T extends ElementLike> {
 }
 
 
-/** Factory for creating various HTMLElement instances and returning the HTMLElement wrapped in a new DomBuilder instance
+/** Factory for creating {@link HTMLElement} or {@link ElementLike} instances and returning the
+ * wrapped element in a new {@link DomBuilder} instance.
  * @author TeamworkGuy2
  * @since 2016-04-26
  */

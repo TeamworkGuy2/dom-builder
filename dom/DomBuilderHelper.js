@@ -189,7 +189,7 @@ var DomBuilderHelper = /** @class */ (function () {
         }
     };
     DomBuilderHelper.parseBoolean = function (str) { return (str === "true"); };
-    DomBuilderHelper.parseBooleanLike = function (str) { return str === "1" ? true : (str === "0" ? false : Boolean(str)); };
+    DomBuilderHelper.parseBooleanLike = function (str) { return str === "1" || str === "true" ? true : (str === "0" || str === "false" ? false : Boolean(str)); };
     return DomBuilderHelper;
 }());
 exports.DomBuilderHelper = DomBuilderHelper;

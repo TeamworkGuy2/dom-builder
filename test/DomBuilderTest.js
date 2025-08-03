@@ -17,9 +17,9 @@ suite("DomBuilder", function domBuilder() {
             '<s id="test"/>' +
             '</sst>');
     });
-    test("create w/ lookupAndAddNamespace", function createWithNamespacesTest() {
+    test("create w/ namespaceHandler", function createWithNamespaceHandlerTest() {
         var dom = new JSDom.JSDOM("<?xml version=\"1.0\"?>\n<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"></sst>", { contentType: "text/xml" }).window.document;
-        var domBldr = new DomBuilderFactory_1.DomBuilderFactory(dom, null, function (elem, name) { return mockLookupAndAddNamespace(dom, elem, name); });
+        var domBldr = new DomBuilderFactory_1.DomBuilderFactory(dom, null, function (elem, name) { return mockNamespaceHandler(dom, elem, name); });
         // element with multiple attributes with namespaces to test the DomBuilderFactory's lookupAndAddNamespace()
         var elem = domBldr.create('s')
             .attrBool('xml:space', true, true, '1', '0')
@@ -36,7 +36,7 @@ var namespaces = {
     "x14ac": "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac",
     "xr": "http://schemas.microsoft.com/office/spreadsheetml/2014/revision",
 };
-function mockLookupAndAddNamespace(document, element, qualifiedName) {
+function mockNamespaceHandler(document, element, qualifiedName) {
     var _a;
     var colonIdx = qualifiedName.indexOf(':');
     var namespaceUri = null;

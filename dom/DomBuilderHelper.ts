@@ -10,7 +10,7 @@ export class DomBuilderHelper implements BuilderHelper {
     private static _parser: DOMParser;
     private static _serializer: XMLSerializer;
     private static parseBoolean = (str: string | null | undefined) => (str === "true");
-    private static parseBooleanLike = (str: string | null | undefined) => str === "1" ? true : (str === "0" ? false : Boolean(str));
+    private static parseBooleanLike = (str: string | null | undefined) => str === "1" || str === "true" ? true : (str === "0" || str === "false" ? false : Boolean(str));
 
     /**
      * @returns the last parser set by {@link setParser} or a default {@link DOMParser}
